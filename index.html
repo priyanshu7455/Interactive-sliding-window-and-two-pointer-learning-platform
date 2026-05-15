@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-lang="cpp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Mastery — Sliding Window & Two Pointer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060b18;--bg2:#0d1628;--bg3:#111e35;--border:#1a2d4e;--border2:#243d60;--text:#e2eaff;--text2:#8ba3cc;--text3:#5a7aaa;--accent:#38bdf8;--accent2:#34d399;--accent3:#a78bfa;--warn:#fbbf24;--danger:#f87171;--card:#0d1628;--sidebar-w:272px;--header-h:60px;--radius:12px;--radius-sm:8px;--shadow:0 4px 24px rgba(0,0,0,0.4);--transition:0.2s ease}
+html[data-theme="light"]{--bg:#f0f4ff;--bg2:#ffffff;--bg3:#e8eeff;--border:#d0daf5;--border2:#b8c9f0;--text:#0d1628;--text2:#3a5080;--text3:#6080bb;--accent:#0284c7;--accent2:#059669;--accent3:#7c3aed;--warn:#d97706;--danger:#dc2626;--card:#ffffff;--shadow:0 4px 24px rgba(0,0,0,0.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.7;transition:background var(--transition),color var(--transition)}
+#lang-modal{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:32px}
+.lang-modal-inner{text-align:center;max-width:520px;padding:0 24px}
+.lang-modal-inner .logo-big{font-family:'Outfit',sans-serif;font-size:2.8rem;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.lang-modal-inner .subtitle{font-size:1.1rem;color:var(--text2);margin-bottom:40px}
+.lang-modal-inner h2{font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:8px}
+.lang-modal-inner p{color:var(--text2);margin-bottom:32px;font-size:.95rem}
+.lang-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.lang-btn{padding:18px 48px;border-radius:14px;border:2px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.lang-btn span{font-size:2rem}
+.lang-btn:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(56,189,248,.15)}
+.lang-btn.cpp:hover{border-color:var(--accent3);box-shadow:0 8px 32px rgba(167,139,250,.15)}
+#app{display:flex;min-height:100vh}
+#sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;transition:transform var(--transition),background var(--transition);overflow-y:auto}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.sidebar-header{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-logo{font-family:'Outfit',sans-serif;font-weight:900;font-size:1.15rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sidebar-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.progress-container{padding:14px 20px;border-bottom:1px solid var(--border)}
+.progress-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--text3);margin-bottom:8px;font-family:'Outfit',sans-serif}
+.progress-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .5s ease}
+.nav-section{padding:8px 0}
+.nav-section-title{padding:4px 20px;font-size:.7rem;font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:.88rem;cursor:pointer;color:var(--text2);border-left:3px solid transparent;position:relative;transition:all var(--transition)}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(56,189,248,.08);color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.nav-item.completed::after{content:'✓';position:absolute;right:16px;font-size:.75rem;color:var(--accent2)}
+.nav-icon{font-size:1rem;flex-shrink:0}
+#main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+#topbar{height:var(--header-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50;gap:16px;transition:background var(--transition)}
+.topbar-left{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:.88rem}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all var(--transition)}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.lang-switch-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'Fira Code',monospace;font-size:.82rem;cursor:pointer;transition:all var(--transition);font-weight:600}
+.lang-switch-btn:hover{border-color:var(--accent)}
+#content-area{flex:1;padding:32px 40px;max-width:960px;margin:0 auto;width:100%}
+.section{display:none}
+.section.active{display:block}
+.page-title{font-family:'Outfit',sans-serif;font-size:2.2rem;font-weight:800;margin-bottom:8px;line-height:1.2}
+.page-subtitle{color:var(--text2);font-size:1.05rem;margin-bottom:32px}
+.section-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.75rem;font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.tag-blue{background:rgba(56,189,248,.12);color:var(--accent);border:1px solid rgba(56,189,248,.2)}
+.tag-green{background:rgba(52,211,153,.12);color:var(--accent2);border:1px solid rgba(52,211,153,.2)}
+.tag-purple{background:rgba(167,139,250,.12);color:var(--accent3);border:1px solid rgba(167,139,250,.2)}
+.tag-warn{background:rgba(251,191,36,.12);color:var(--warn);border:1px solid rgba(251,191,36,.2)}
+h2{font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;margin:32px 0 12px;color:var(--text)}
+h3{font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:700;margin:24px 0 10px;color:var(--text)}
+p{margin-bottom:14px;color:var(--text2);line-height:1.8}
+strong{color:var(--text);font-weight:600}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;transition:all var(--transition)}
+.card:hover{border-color:var(--border2)}
+.card-accent{border-left:3px solid var(--accent)}
+.card-green{border-left:3px solid var(--accent2)}
+.card-purple{border-left:3px solid var(--accent3)}
+.card-warn{border-left:3px solid var(--warn)}
+.card-danger{border-left:3px solid var(--danger)}
+.info-box{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:var(--radius-sm);padding:16px 20px;margin:16px 0}
+.info-box.green{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)}
+.info-box.warn{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.2)}
+.info-box.purple{background:rgba(167,139,250,.06);border-color:rgba(167,139,250,.2)}
+.info-box.danger{background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.2)}
+.info-box-title{font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:6px;font-size:.9rem}
+.array-visual{display:flex;align-items:flex-end;gap:4px;flex-wrap:wrap;margin:16px 0;padding:16px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--border);font-family:'Fira Code',monospace}
+.arr-cell{display:flex;flex-direction:column;align-items:center;gap:4px}
+.arr-box{width:44px;height:44px;border:2px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:600;background:var(--bg2);color:var(--text);transition:all .3s}
+.arr-box.active{background:var(--accent);border-color:var(--accent);color:#000}
+.arr-box.window{background:rgba(56,189,248,.15);border-color:var(--accent);color:var(--accent)}
+.arr-box.found{background:var(--accent2);border-color:var(--accent2);color:#000}
+.arr-idx{font-size:.7rem;color:var(--text3)}
+.code-wrap{border-radius:var(--radius-sm);overflow:hidden;margin:16px 0;border:1px solid var(--border)}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;color:var(--text2)}
+.code-dots{display:flex;gap:6px}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#f87171}.dot-y{background:#fbbf24}.dot-g{background:#34d399}
+.copy-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:.75rem;cursor:pointer;transition:all var(--transition);font-family:'Outfit',sans-serif}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+pre{margin:0;padding:20px;background:#020b18;overflow-x:auto;font-family:'Fira Code',monospace;font-size:.85rem;line-height:1.7;color:#c9d1d9}
+html[data-theme="light"] pre{background:#1a1e2e}
+.kw{color:#ff79c6}.fn{color:#8be9fd}.str{color:#f1fa8c}.cm{color:#6272a4}.num{color:#bd93f9}.type{color:#ffb86c}.var{color:#f8f8f2}
+html[data-lang="cpp"] .py-only{display:none}
+html[data-lang="python"] .cpp-only{display:none}
+.visualizer{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0}
+.viz-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;margin-bottom:16px;color:var(--accent);display:flex;align-items:center;gap:8px}
+.viz-array-row{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;margin:12px 0}
+.viz-cell{display:flex;flex-direction:column;align-items:center;gap:3px}
+.viz-box{width:46px;height:46px;border:2px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:1rem;font-weight:600;background:var(--bg2);color:var(--text);transition:all .3s ease}
+.viz-box.left{background:rgba(167,139,250,.25);border-color:var(--accent3);color:var(--accent3);transform:scale(1.1)}
+.viz-box.right{background:rgba(248,113,113,.25);border-color:var(--danger);color:var(--danger);transform:scale(1.1)}
+.viz-box.win{background:rgba(56,189,248,.2);border-color:var(--accent);color:var(--accent)}
+.viz-box.found{background:rgba(52,211,153,.3);border-color:var(--accent2);color:var(--accent2);transform:scale(1.1)}
+.viz-box.inactive{opacity:.4}
+.viz-idx{font-size:.68rem;color:var(--text3);font-family:'Fira Code',monospace}
+.viz-ptr{font-size:.7rem;font-weight:700;font-family:'Outfit',sans-serif}
+.viz-ptr.l{color:var(--accent3)}.viz-ptr.r{color:var(--danger)}.viz-ptr.w{color:var(--accent)}
+.viz-msg{margin:14px 0;padding:12px 16px;border-radius:var(--radius-sm);background:var(--bg2);border:1px solid var(--border);font-size:.9rem;min-height:44px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.viz-msg.found{border-color:var(--accent2);color:var(--accent2);background:rgba(52,211,153,.06)}
+.viz-stats{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0}
+.viz-stat{padding:8px 16px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);font-size:.85rem;font-family:'Fira Code',monospace}
+.viz-stat span{color:var(--accent);font-weight:600}
+.viz-controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.viz-btn{padding:8px 20px;border-radius:8px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all var(--transition)}
+.viz-btn:hover{border-color:var(--accent);color:var(--accent)}
+.viz-btn.primary{background:var(--accent);border-color:var(--accent);color:#000}
+.viz-btn.primary:hover{opacity:.85}
+.viz-btn:disabled{opacity:.4;cursor:not-allowed}
+.steps-list{list-style:none;counter-reset:step}
+.steps-list li{counter-increment:step;display:flex;gap:16px;margin-bottom:16px;align-items:flex-start}
+.steps-list li::before{content:counter(step);min-width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:.8rem;color:#000;flex-shrink:0;margin-top:2px}
+.steps-list li p{margin:0}
+.prob-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:all var(--transition)}
+.prob-card:hover{border-color:var(--border2)}
+.prob-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;gap:12px}
+.prob-header:hover{background:var(--bg3)}
+.prob-meta{display:flex;align-items:center;gap:10px;flex:1}
+.prob-num{width:28px;height:28px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:.78rem;color:var(--text3);flex-shrink:0}
+.prob-title{font-family:'Outfit',sans-serif;font-weight:600;font-size:.95rem}
+.prob-tags{display:flex;gap:6px;flex-wrap:wrap}
+.diff-badge{padding:2px 10px;border-radius:20px;font-size:.72rem;font-family:'Outfit',sans-serif;font-weight:700}
+.diff-easy{background:rgba(52,211,153,.12);color:var(--accent2)}
+.diff-medium{background:rgba(251,191,36,.12);color:var(--warn)}
+.diff-hard{background:rgba(248,113,113,.12);color:var(--danger)}
+.prob-chevron{color:var(--text3);transition:transform var(--transition);font-size:.9rem}
+.prob-card.open .prob-chevron{transform:rotate(180deg)}
+.prob-body{display:none;border-top:1px solid var(--border);padding:20px}
+.prob-card.open .prob-body{display:block}
+.complexity-row{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}
+.complexity-chip{display:flex;gap:8px;align-items:center;padding:8px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);font-family:'Fira Code',monospace;font-size:.85rem}
+.complexity-chip .clabel{color:var(--text3);font-size:.78rem;font-family:'Outfit',sans-serif}
+.complexity-chip .cvalue{color:var(--accent2);font-weight:600}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.hl-blue{color:var(--accent);font-weight:600}.hl-green{color:var(--accent2);font-weight:600}.hl-purple{color:var(--accent3);font-weight:600}.hl-warn{color:var(--warn);font-weight:600}.hl-red{color:var(--danger);font-weight:600}
+.mark-btn{margin-top:32px;padding:12px 28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#000;font-family:'Outfit',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:all var(--transition);display:inline-flex;align-items:center;gap:8px}
+.mark-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(56,189,248,.3)}
+.mark-btn.done{background:linear-gradient(135deg,var(--accent2),#10b981)}
+.cheat-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.cheat-grid{grid-template-columns:1fr}}
+.cheat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.cheat-card h4{font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:12px;color:var(--accent);font-size:.95rem}
+.pattern-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+.pattern-table th{padding:10px 16px;background:var(--bg3);text-align:left;font-family:'Outfit',sans-serif;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border2)}
+.pattern-table td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+.pattern-table tr:hover td{background:var(--bg3)}
+.keyword-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.78rem;font-family:'Fira Code',monospace;background:rgba(167,139,250,.12);color:var(--accent3);border:1px solid rgba(167,139,250,.2);margin:2px}
+.home-hero{text-align:center;padding:40px 0 32px}
+.home-hero .big-title{font-family:'Outfit',sans-serif;font-size:3rem;font-weight:900;line-height:1.15;margin-bottom:16px}
+.grad-text{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.home-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:32px 0}
+@media(max-width:640px){.home-stats{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:all var(--transition)}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-num{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:.82rem;color:var(--text3);margin-top:4px}
+.start-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#000;font-family:'Outfit',sans-serif;font-weight:800;font-size:1.05rem;cursor:pointer;transition:all var(--transition);margin-top:8px}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(56,189,248,.25)}
+.roadmap{display:flex;flex-direction:column;gap:12px;margin:24px 0}
+.roadmap-item{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all var(--transition)}
+.roadmap-item:hover{border-color:var(--accent);transform:translateX(4px)}
+.roadmap-item .ri-icon{font-size:1.4rem}
+.roadmap-item h4{font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:2px}
+.roadmap-item p{margin:0;font-size:.82rem;color:var(--text3)}
+.ri-badge{margin-left:auto;padding:4px 10px;border-radius:6px;font-size:.72rem;font-family:'Outfit',sans-serif;font-weight:700;background:var(--bg3);color:var(--text3)}
+.sidebar-toggle{display:none;position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--accent);border:none;color:#000;font-size:1.2rem;cursor:pointer;z-index:200;box-shadow:0 4px 20px rgba(56,189,248,.4);align-items:center;justify-content:center}
+@media(max-width:900px){#sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}#main{margin-left:0}.sidebar-toggle{display:flex}#content-area{padding:20px}}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+hr{border:none;border-top:1px solid var(--border);margin:28px 0}
+.dry-run-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:'Fira Code',monospace;font-size:.8rem;line-height:2;white-space:pre-wrap;margin:12px 0;color:var(--text2)}
+</style>
+</head>
+<body>
+<div id="lang-modal">
+  <div class="lang-modal-inner">
+    <div class="logo-big">🧠 DSA Mastery</div>
+    <p class="subtitle">Sliding Window &amp; Two Pointer — From Zero to FAANG</p>
+    <h2>Choose Your Language</h2>
+    <p>All code, templates, and examples will use your chosen language throughout the course.</p>
+    <div class="lang-btns">
+      <button class="lang-btn cpp" onclick="selectLang('cpp')"><span>⚡</span>C++<small style="color:var(--text3);font-size:.72rem">Fast, preferred at FAANG</small></button>
+      <button class="lang-btn" onclick="selectLang('python')"><span>🐍</span>Python<small style="color:var(--text3);font-size:.72rem">Clean, easy to read</small></button>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<nav id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo-icon">🧠</div><div class="sidebar-logo">DSA Mastery</div></div>
+  <div class="progress-container">
+    <div class="progress-label"><span>Progress</span><span id="progress-text">0 / 9 done</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-item active" onclick="nav('home')" data-section="home"><span class="nav-icon">🏠</span>Home</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Foundation</div>
+    <div class="nav-item" onclick="nav('basics')" data-section="basics"><span class="nav-icon">📚</span>Basics (Zero Level)</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Techniques</div>
+    <div class="nav-item" onclick="nav('twoptr')" data-section="twoptr"><span class="nav-icon">👆</span>Two Pointer</div>
+    <div class="nav-item" onclick="nav('sliding')" data-section="sliding"><span class="nav-icon">🪟</span>Sliding Window</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Practice</div>
+    <div class="nav-item" onclick="nav('problems')" data-section="problems"><span class="nav-icon">💡</span>Top 10 Deep Dives</div>
+    <div class="nav-item" onclick="nav('practice30')" data-section="practice30"><span class="nav-icon">🏋️</span>30 Practice Problems</div>
+    <div class="nav-item" onclick="nav('leetcode')" data-section="leetcode"><span class="nav-icon">🎯</span>LeetCode Top 20</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Master Tools</div>
+    <div class="nav-item" onclick="nav('pattern')" data-section="pattern"><span class="nav-icon">🔍</span>Pattern Recognition</div>
+    <div class="nav-item" onclick="nav('approach')" data-section="approach"><span class="nav-icon">🛠</span>Approach Builder</div>
+    <div class="nav-item" onclick="nav('cheatsheet')" data-section="cheatsheet"><span class="nav-icon">⚡</span>Cheatsheet</div>
+  </div>
+</nav>
+
+<main id="main">
+  <div id="topbar">
+    <div class="topbar-left">
+      <span style="color:var(--text3)">DSA Mastery</span>
+      <span style="color:var(--border2)">›</span>
+      <span style="font-weight:600" id="breadcrumb">Home</span>
+    </div>
+    <div class="topbar-right">
+      <button class="lang-switch-btn" onclick="switchLang()" id="lang-label">C++</button>
+      <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+    </div>
+  </div>
+  <div id="content-area" id="ca"></div>
+</main>
+</div>
+<button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<script>
+// ===== STATE =====
+let currentLang='cpp', currentSection='home';
+let completedSections=new Set(JSON.parse(localStorage.getItem('dsa-done')||'[]'));
+const TOTAL=9;
+const names={home:'Home',basics:'Basics',twoptr:'Two Pointer',sliding:'Sliding Window',problems:'Deep Dives',practice30:'Practice 30',leetcode:'LeetCode Top 20',pattern:'Pattern Guide',approach:'Approach Builder',cheatsheet:'Cheatsheet'};
+
+function selectLang(lang){
+  currentLang=lang;
+  document.documentElement.setAttribute('data-lang',lang);
+  document.getElementById('lang-modal').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('lang-label').textContent=lang==='cpp'?'C++':'Python';
+  updateProgress();
+  buildAll();
+  initViz();
+}
+
+function switchLang(){
+  currentLang=currentLang==='cpp'?'python':'cpp';
+  document.documentElement.setAttribute('data-lang',currentLang);
+  document.getElementById('lang-label').textContent=currentLang==='cpp'?'C++':'Python';
+}
+
+function nav(s){
+  document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  currentSection=s;
+  const el=document.getElementById('sec-'+s);
+  if(el) el.classList.add('active');
+  const nav=document.querySelector('[data-section="'+s+'"]');
+  if(nav) nav.classList.add('active');
+  document.getElementById('breadcrumb').textContent=names[s]||s;
+  window.scrollTo(0,0);
+  if(window.innerWidth<900) document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('theme-btn').textContent=isDark?'☀️':'🌙';
+}
+
+function markDone(s){
+  completedSections.add(s);
+  localStorage.setItem('dsa-done',JSON.stringify([...completedSections]));
+  updateProgress();
+  const btn=event.target;
+  btn.textContent='🎉 Completed!';
+  btn.classList.add('done');
+}
+
+function updateProgress(){
+  const d=completedSections.size;
+  document.getElementById('progress-fill').style.width=Math.round(d/TOTAL*100)+'%';
+  document.getElementById('progress-text').textContent=d+' / '+TOTAL+' done';
+  completedSections.forEach(s=>{
+    const el=document.querySelector('[data-section="'+s+'"]');
+    if(el) el.classList.add('completed');
+  });
+}
+
+function copyCode(btn){
+  const code=btn.closest('.code-wrap').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);});
+}
+
+function codeBlock(lang,title,code){
+  return `<div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dots"><span class="code-dot dot-r"></span><span class="code-dot dot-y"></span><span class="code-dot dot-g"></span></div>
+      <span>${title} — ${lang==='cpp'?'C++':'Python'}</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre>${code}</pre>
+  </div>`;
+}
+
+// ===== VISUALIZER =====
+const TP_ARR=[1,2,4,6,8,9,14,15], TP_TARGET=10;
+const FW_ARR=[2,1,5,1,3,2], FW_K=3;
+let tpSteps=[],tpStep=0,tpTimer=null;
+let fwSteps=[],fwStep=0,fwTimer=null;
+
+function computeTPSteps(){
+  const s=[];
+  let L=0,R=TP_ARR.length-1;
+  s.push({L,R,msg:`🚀 Start! L=${L} → value=${TP_ARR[L]}, R=${R} → value=${TP_ARR[R]}. Target=${TP_TARGET}. Check sum of both ends.`,status:''});
+  while(L<R){
+    const sum=TP_ARR[L]+TP_ARR[R];
+    if(sum===TP_TARGET){s.push({L,R,sum,msg:`🎉 FOUND! ${TP_ARR[L]}+${TP_ARR[R]}=${sum}=Target! Answer: [${L+1},${R+1}] (1-indexed)`,status:'found'});break;}
+    else if(sum<TP_TARGET){s.push({L,R,sum,msg:`Sum ${sum} < Target ${TP_TARGET}. Too small → move L right to get bigger value. L: ${L}→${L+1}`,status:'small'});L++;}
+    else{s.push({L,R,sum,msg:`Sum ${sum} > Target ${TP_TARGET}. Too big → move R left to get smaller value. R: ${R}→${R-1}`,status:'large'});R--;}
+  }
+  return s;
+}
+
+function renderTP(step){
+  const s=tpSteps[step];
+  let html='';
+  TP_ARR.forEach((v,i)=>{
+    let cls=s.status==='found'&&i!==s.L&&i!==s.R?'inactive':'';
+    let ptr='';
+    if(i===s.L&&i===s.R){cls='found';ptr='L&R';}
+    else if(i===s.L){cls='left';ptr='L';}
+    else if(i===s.R){cls='right';ptr='R';}
+    html+=`<div class="viz-cell"><div class="viz-ptr ${i===s.L?'l':i===s.R?'r':''}">${ptr||'&nbsp;'}</div><div class="viz-box ${cls}">${v}</div><div class="viz-idx">${i}</div></div>`;
+  });
+  document.getElementById('tp-arr').innerHTML=html;
+  document.getElementById('tp-L').textContent=s.L;
+  document.getElementById('tp-R').textContent=s.R;
+  document.getElementById('tp-sum').textContent=s.sum!=null?s.sum:'-';
+  const m=document.getElementById('tp-msg');
+  m.textContent=s.msg; m.className='viz-msg'+(s.status==='found'?' found':'');
+  document.getElementById('tp-next').disabled=(step>=tpSteps.length-1);
+}
+
+function tpNext(){if(tpStep<tpSteps.length-1){tpStep++;renderTP(tpStep);}}
+function tpReset(){clearInterval(tpTimer);tpStep=0;document.getElementById('tp-next').disabled=false;renderTP(0);}
+function tpAuto(){clearInterval(tpTimer);tpTimer=setInterval(()=>{if(tpStep>=tpSteps.length-1){clearInterval(tpTimer);return;}tpStep++;renderTP(tpStep);},1200);}
+
+function computeFWSteps(){
+  const s=[];
+  let wSum=0;
+  for(let i=0;i<FW_K;i++) wSum+=FW_ARR[i];
+  let maxSum=wSum;
+  s.push({L:0,R:FW_K-1,wSum,maxSum,msg:`🚀 Build first window [0..${FW_K-1}]: ${FW_ARR.slice(0,FW_K).join('+')}=${wSum}. Initial max = ${maxSum}.`});
+  for(let R=FW_K;R<FW_ARR.length;R++){
+    const out=FW_ARR[R-FW_K];
+    wSum+=FW_ARR[R]-out;
+    const prev=maxSum;
+    maxSum=Math.max(maxSum,wSum);
+    s.push({L:R-FW_K+1,R,wSum,maxSum,msg:`Slide: +arr[${R}]=${FW_ARR[R]}, -arr[${R-FW_K}]=${out}. Sum=${wSum}.${maxSum>prev?' 🎯 New max='+maxSum+'!':' Max stays '+maxSum+'.'}`});
+  }
+  s.push({L:FW_ARR.length-FW_K,R:FW_ARR.length-1,wSum,maxSum,msg:`✅ Done! Maximum sum subarray of size ${FW_K} = ${maxSum}`});
+  return s;
+}
+
+function renderFW(step){
+  const s=fwSteps[step];
+  let html='';
+  FW_ARR.forEach((v,i)=>{
+    const inWin=i>=s.L&&i<=s.R;
+    html+=`<div class="viz-cell"><div class="viz-ptr w">${inWin?'▼':'&nbsp;'}</div><div class="viz-box ${inWin?'win':''}">${v}</div><div class="viz-idx">${i}</div></div>`;
+  });
+  document.getElementById('fw-arr').innerHTML=html;
+  document.getElementById('fw-sum').textContent=s.wSum;
+  document.getElementById('fw-max').textContent=s.maxSum;
+  document.getElementById('fw-range').textContent=s.L+'..'+s.R;
+  document.getElementById('fw-msg').textContent=s.msg;
+  document.getElementById('fw-next').disabled=(step>=fwSteps.length-1);
+}
+
+function fwNext(){if(fwStep<fwSteps.length-1){fwStep++;renderFW(fwStep);}}
+function fwReset(){clearInterval(fwTimer);fwStep=0;document.getElementById('fw-next').disabled=false;renderFW(0);}
+function fwAuto(){clearInterval(fwTimer);fwTimer=setInterval(()=>{if(fwStep>=fwSteps.length-1){clearInterval(fwTimer);return;}fwStep++;renderFW(fwStep);},1300);}
+
+function initViz(){
+  tpSteps=computeTPSteps(); renderTP(0);
+  fwSteps=computeFWSteps(); renderFW(0);
+}
+
+function toggleProb(id){
+  const card=document.getElementById('prob-'+id);
+  card.classList.toggle('open');
+}
+
+// ===== CONTENT BUILDER =====
+function buildAll(){
+  buildHome();
+  buildBasics();
+  buildTwoPtr();
+  buildSliding();
+  buildDeepProblems();
+  buildPractice30();
+  buildLeetcode();
+  buildPattern();
+  buildApproach();
+  buildCheatsheet();
+  nav('home');
+}
+
+const ca=()=>document.getElementById('content-area');
+
+function sec(id,content){
+  const d=document.createElement('div');
+  d.id='sec-'+id; d.className='section';
+  d.innerHTML=content; ca().appendChild(d);
+}
+
+const L=currentLang;
+function cpp(c){return `<div class="cpp-only">${c}</div>`;}
+function py(c){return `<div class="py-only">${c}</div>`;}
+
+// ===== HOME =====
+function buildHome(){
+  sec('home',`
+  <div class="home-hero">
+    <div class="big-title">Master <span class="grad-text">Sliding Window</span><br>&amp; <span class="grad-text">Two Pointer</span></div>
+    <p style="color:var(--text2);font-size:1.1rem;max-width:560px;margin:0 auto 24px">Zero to FAANG — interactive, step-by-step, with visualizers, 30+ problems, and full solutions.</p>
+    <button class="start-btn" onclick="nav('basics')">🚀 Start Learning</button>
+  </div>
+  <div class="home-stats">
+    <div class="stat-card"><div class="stat-num">30+</div><div class="stat-label">Practice Problems</div></div>
+    <div class="stat-card"><div class="stat-num">20</div><div class="stat-label">LeetCode Classics</div></div>
+    <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Visualizers</div></div>
+    <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Interview Ready</div></div>
+  </div>
+  <h2>📍 Your Learning Roadmap</h2>
+  <div class="roadmap">
+    <div class="roadmap-item" onclick="nav('basics')"><span class="ri-icon">📚</span><div><h4>Step 1: Basics</h4><p>Arrays, subarrays, brute force, time complexity</p></div><span class="ri-badge">Start Here</span></div>
+    <div class="roadmap-item" onclick="nav('twoptr')"><span class="ri-icon">👆</span><div><h4>Step 2: Two Pointer</h4><p>Opposite direction, fast-slow, visualizer, 3 problems</p></div><span class="ri-badge">Core</span></div>
+    <div class="roadmap-item" onclick="nav('sliding')"><span class="ri-icon">🪟</span><div><h4>Step 3: Sliding Window</h4><p>Fixed &amp; variable window, expand-shrink, visualizer</p></div><span class="ri-badge">Core</span></div>
+    <div class="roadmap-item" onclick="nav('problems')"><span class="ri-icon">💡</span><div><h4>Step 4: Top 10 Deep Dives</h4><p>Brute force → optimized, dry run, full code</p></div><span class="ri-badge">Master</span></div>
+    <div class="roadmap-item" onclick="nav('practice30')"><span class="ri-icon">🏋️</span><div><h4>Step 5: 30 Practice Problems</h4><p>Easy → Hard with expandable solutions</p></div><span class="ri-badge">Practice</span></div>
+    <div class="roadmap-item" onclick="nav('cheatsheet')"><span class="ri-icon">⚡</span><div><h4>Step 6: Cheatsheet &amp; Pattern Guide</h4><p>Templates, keyword triggers, common mistakes</p></div><span class="ri-badge">Reference</span></div>
+  </div>
+  <button class="mark-btn" onclick="markDone('home')">✅ Mark as Done</button>`);
+}
+
+// ===== BASICS =====
+function buildBasics(){
+  sec('basics',`
+  <div class="section-tag tag-blue">📚 Chapter 1</div>
+  <div class="page-title">Basics — Zero Level</div>
+  <p class="page-subtitle">Crystal-clear foundations before we learn any technique.</p>
+  <h2>🗃️ What is an Array?</h2>
+  <p>An array is like a <strong>row of numbered boxes</strong>. Each box holds one value. Each box has an address called its <span style="color:var(--accent);font-weight:600">index</span>, starting from <strong>0</strong>.</p>
+  <div class="array-visual">
+    ${[3,1,4,1,5,9,2,6].map((v,i)=>`<div class="arr-cell"><div class="arr-box ${i===0?'active':''}">${v}</div><div class="arr-idx">${i}</div></div>`).join('')}
+  </div>
+  <div class="info-box"><div class="info-box-title">💡 Key Facts</div>
+  arr[0]=3 &nbsp;|&nbsp; arr[2]=4 &nbsp;|&nbsp; arr[5]=9<br>
+  Access any element in <strong>O(1)</strong> time using its index. Length = 8.</div>
+  
+  <h2>🔗 What is a Subarray?</h2>
+  <p>A subarray is a <strong>continuous (unbroken) part</strong> of an array — like cutting from a chocolate bar without skipping pieces.</p>
+  <div class="grid-2">
+    <div class="card card-green"><div class="info-box-title" style="color:var(--accent2)">✅ Valid Subarrays of [3,1,4,1,5]</div>
+    <ul style="list-style:none;margin-top:8px;font-family:'Fira Code',monospace;font-size:.85rem;line-height:2.2">
+      <li>[3] → index 0 to 0</li><li>[3,1] → index 0 to 1</li>
+      <li>[1,4,1] → index 1 to 3</li><li>[3,1,4,1,5] → full array</li>
+    </ul></div>
+    <div class="card card-danger"><div class="info-box-title" style="color:var(--danger)">❌ NOT Subarrays (skip elements)</div>
+    <ul style="list-style:none;margin-top:8px;font-family:'Fira Code',monospace;font-size:.85rem;line-height:2.2">
+      <li>[3,4,5] → skipped middle elements</li><li>[1,5] → skipped elements</li>
+      <li>[5,3] → wrong order</li><li>These are called subsequences</li>
+    </ul></div>
+  </div>
+  <div class="info-box warn"><div class="info-box-title">📊 Total Subarrays</div>
+  For array of length n: total subarrays = <strong>n×(n+1)/2</strong><br>
+  n=5 → 15 subarrays. n=100 → 5050 subarrays. This is why brute force O(n²) is slow!</div>
+
+  <h2>🔤 Strings = Character Arrays</h2>
+  <p><code style="font-family:'Fira Code';color:var(--accent)">"hello"</code> = ['h','e','l','l','o']. A <strong>substring</strong> is a continuous part of a string — same rules as subarrays.</p>
+
+  <h2>🐌 What is Brute Force?</h2>
+  <p>Brute force = <strong>trying every possibility</strong>. Always works, but usually slow. Like finding your key by checking EVERY drawer in the house.</p>
+  <div class="card card-warn">
+    <h3 style="margin-top:0">🎯 Example: Max Sum Subarray of size k=3</h3>
+    <p>Array: [2,1,5,1,3,2] — Try every subarray of length 3:</p>
+    <div class="dry-run-box">[2,1,5] → sum = 8
+[1,5,1] → sum = 7
+[5,1,3] → sum = 9  ← MAX ✅
+[1,3,2] → sum = 6
+
+Time: O(n×k) — For n=10000, k=1000 → 10 million operations! 😱</div>
+  </div>
+
+  <h2>⏱️ Time Complexity (Super Simple)</h2>
+  <p>Tells us how time grows as input gets bigger. We use "Big O" notation — always look at the worst case.</p>
+  <div class="grid-2">
+    <div class="card"><div style="font-family:'Outfit';font-weight:700;margin-bottom:8px;color:var(--accent2)">O(1) — Constant ⚡</div><p style="margin:0;font-size:.88rem">Same time regardless of size. arr[5] is instant whether array has 10 or 10 million elements.</p></div>
+    <div class="card"><div style="font-family:'Outfit';font-weight:700;margin-bottom:8px;color:var(--accent)">O(n) — Linear ✅</div><p style="margin:0;font-size:.88rem">Doubles when input doubles. Reading every element once. This is our goal!</p></div>
+    <div class="card"><div style="font-family:'Outfit';font-weight:700;margin-bottom:8px;color:var(--warn)">O(n log n) — Good ✅</div><p style="margin:0;font-size:.88rem">Sorting algorithms. Very manageable even for large inputs.</p></div>
+    <div class="card"><div style="font-family:'Outfit';font-weight:700;margin-bottom:8px;color:var(--danger)">O(n²) — Quadratic ❌</div><p style="margin:0;font-size:.88rem">Nested loops. n=10,000 → 100 million operations. TLE in interviews!</p></div>
+  </div>
+  <div class="info-box green"><div class="info-box-title">🎯 Why We Optimize</div>
+  Brute force → O(n²) → <strong>TLE (Time Limit Exceeded)</strong> ❌<br>
+  Sliding Window / Two Pointer → O(n) → <strong>Accepted!</strong> ✅<br>
+  Same correct answer, 100–1000x faster. That's the magic we're learning.</div>
+  <button class="mark-btn" onclick="markDone('basics')">✅ Mark Basics as Done</button>`);
+}
+
+// ===== TWO POINTER =====
+function buildTwoPtr(){
+  const cpp_two_sum=`<span class="type">vector</span>&lt;<span class="kw">int</span>&gt; <span class="fn">twoSum</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; nums, <span class="kw">int</span> target) {
+    <span class="kw">int</span> L = <span class="num">0</span>, R = nums.size() - <span class="num">1</span>;
+    <span class="kw">while</span> (L &lt; R) {
+        <span class="kw">int</span> sum = nums[L] + nums[R];
+        <span class="kw">if</span> (sum == target)   <span class="kw">return</span> {L+<span class="num">1</span>, R+<span class="num">1</span>}; <span class="cm">// 1-indexed</span>
+        <span class="kw">else if</span> (sum &lt; target) L++; <span class="cm">// Need bigger → move L right</span>
+        <span class="kw">else</span>                   R--; <span class="cm">// Need smaller → move R left</span>
+    }
+    <span class="kw">return</span> {};
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`;
+  const py_two_sum=`<span class="kw">def</span> <span class="fn">twoSum</span>(numbers, target):
+    L, R = <span class="num">0</span>, <span class="kw">len</span>(numbers) - <span class="num">1</span>
+    <span class="kw">while</span> L &lt; R:
+        total = numbers[L] + numbers[R]
+        <span class="kw">if</span> total == target:   <span class="kw">return</span> [L+<span class="num">1</span>, R+<span class="num">1</span>]  <span class="cm"># 1-indexed</span>
+        <span class="kw">elif</span> total &lt; target:  L += <span class="num">1</span>  <span class="cm"># Need bigger</span>
+        <span class="kw">else</span>:                 R -= <span class="num">1</span>  <span class="cm"># Need smaller</span>
+    <span class="kw">return</span> []
+<span class="cm"># Time: O(n) | Space: O(1)</span>`;
+
+  const cpp_rmdup=`<span class="kw">int</span> <span class="fn">removeDuplicates</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; nums) {
+    <span class="kw">if</span> (nums.empty()) <span class="kw">return</span> <span class="num">0</span>;
+    <span class="kw">int</span> slow = <span class="num">0</span>; <span class="cm">// marks last unique position</span>
+    <span class="kw">for</span> (<span class="kw">int</span> fast = <span class="num">1</span>; fast &lt; nums.size(); fast++) {
+        <span class="kw">if</span> (nums[fast] != nums[slow]) {
+            slow++;
+            nums[slow] = nums[fast];
+        }
+        <span class="cm">// If same, fast keeps moving, slow stays</span>
+    }
+    <span class="kw">return</span> slow + <span class="num">1</span>; <span class="cm">// count of unique elements</span>
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`;
+  const py_rmdup=`<span class="kw">def</span> <span class="fn">removeDuplicates</span>(nums):
+    <span class="kw">if not</span> nums: <span class="kw">return</span> <span class="num">0</span>
+    slow = <span class="num">0</span>  <span class="cm"># marks last unique position</span>
+    <span class="kw">for</span> fast <span class="kw">in</span> range(<span class="num">1</span>, <span class="kw">len</span>(nums)):
+        <span class="kw">if</span> nums[fast] != nums[slow]:
+            slow += <span class="num">1</span>
+            nums[slow] = nums[fast]
+        <span class="cm"># If same, fast keeps moving, slow stays</span>
+    <span class="kw">return</span> slow + <span class="num">1</span>
+<span class="cm"># Time: O(n) | Space: O(1)</span>`;
+
+  const cpp_water=`<span class="kw">int</span> <span class="fn">maxArea</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; height) {
+    <span class="kw">int</span> L = <span class="num">0</span>, R = height.size()-<span class="num">1</span>, maxW = <span class="num">0</span>;
+    <span class="kw">while</span> (L &lt; R) {
+        <span class="cm">// water = shorter height × width</span>
+        <span class="kw">int</span> water = min(height[L], height[R]) * (R - L);
+        maxW = max(maxW, water);
+        <span class="cm">// Move the SHORTER wall → might find taller one</span>
+        <span class="kw">if</span> (height[L] &lt; height[R]) L++;
+        <span class="kw">else</span> R--;
+    }
+    <span class="kw">return</span> maxW;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`;
+  const py_water=`<span class="kw">def</span> <span class="fn">maxArea</span>(height):
+    L, R = <span class="num">0</span>, <span class="kw">len</span>(height) - <span class="num">1</span>
+    max_w = <span class="num">0</span>
+    <span class="kw">while</span> L &lt; R:
+        water = <span class="kw">min</span>(height[L], height[R]) * (R - L)
+        max_w = <span class="kw">max</span>(max_w, water)
+        <span class="cm"># Move the SHORTER wall</span>
+        <span class="kw">if</span> height[L] &lt; height[R]: L += <span class="num">1</span>
+        <span class="kw">else</span>: R -= <span class="num">1</span>
+    <span class="kw">return</span> max_w
+<span class="cm"># Time: O(n) | Space: O(1)</span>`;
+
+  sec('twoptr',`
+  <div class="section-tag tag-purple">👆 Chapter 2</div>
+  <div class="page-title">Two Pointer Technique</div>
+  <p class="page-subtitle">Two pointers working together to solve problems that would otherwise require nested loops.</p>
+
+  <h2>🎭 The Real-Life Story</h2>
+  <div class="card card-accent">
+    <p><strong>Imagine a sorted bookshelf:</strong> Books arranged thinnest to thickest. Task: find two books whose pages sum to exactly 500.</p>
+    <p><strong>🐌 Brute Force:</strong> Pick every pair — O(n²) checks. For 100 books: 4950 pairs!</p>
+    <p style="margin-bottom:0"><strong>⚡ Two Pointer:</strong><br>
+    ① You stand at the THINNEST book → Left pointer (L)<br>
+    ② Friend stands at the THICKEST book → Right pointer (R)<br>
+    ③ Check: L+R = 500?<br>
+    &nbsp;&nbsp;• YES → Found it! 🎉<br>
+    &nbsp;&nbsp;• TOO BIG → Friend moves left (less thick)<br>
+    &nbsp;&nbsp;• TOO SMALL → You move right (more thick)<br>
+    ④ Stop when L and R meet.<br><br>
+    This is <strong>O(n)</strong> — each pointer moves at most n times total!</p>
+  </div>
+
+  <h2>🔑 When to Use Two Pointer</h2>
+  <div class="grid-2">
+    <div class="card card-green"><h3 style="margin-top:0;color:var(--accent2)">✅ Use When...</h3>
+    <ul style="padding-left:20px;line-height:2;color:var(--text2);font-size:.9rem">
+      <li>Array/string is <strong>sorted</strong></li>
+      <li>Finding a <strong>pair/triplet</strong> with sum condition</li>
+      <li>Checking <strong>palindrome</strong></li>
+      <li>Removing <strong>duplicates in-place</strong></li>
+      <li>Merging two sorted arrays</li>
+      <li>Container/water maximization</li>
+    </ul></div>
+    <div class="card card-purple"><h3 style="margin-top:0;color:var(--accent3)">🔑 Keyword Signals</h3>
+    <div style="margin-top:8px">
+      <span class="keyword-pill">pair</span><span class="keyword-pill">sum=target</span><span class="keyword-pill">sorted array</span>
+      <span class="keyword-pill">palindrome</span><span class="keyword-pill">two elements</span><span class="keyword-pill">in-place</span>
+      <span class="keyword-pill">container</span><span class="keyword-pill">water trapped</span><span class="keyword-pill">no extra space</span>
+    </div></div>
+  </div>
+
+  <h2>📐 Type 1: Opposite Direction (←L &nbsp;&nbsp; R→)</h2>
+  <p>L starts at 0, R starts at end. They move <strong>toward each other</strong>. Used when array is sorted and looking for pairs.</p>
+
+  <h2>🎮 Interactive: Two Sum Visualizer</h2>
+  <div class="visualizer">
+    <div class="viz-title">⚡ Two Pointer — Two Sum on Sorted Array</div>
+    <p style="font-size:.88rem;color:var(--text2);margin-bottom:16px">Array: [1,2,4,6,8,9,14,15] &nbsp; Target: <strong>10</strong></p>
+    <div class="viz-array-row" id="tp-arr"></div>
+    <div class="viz-stats">
+      <div class="viz-stat">L = <span id="tp-L">0</span></div>
+      <div class="viz-stat">R = <span id="tp-R">7</span></div>
+      <div class="viz-stat">Sum = <span id="tp-sum">-</span></div>
+      <div class="viz-stat">Target = <span style="color:var(--accent2)">10</span></div>
+    </div>
+    <div class="viz-msg" id="tp-msg">👈 Click "Next Step" to begin</div>
+    <div class="viz-controls">
+      <button class="viz-btn" onclick="tpReset()">↺ Reset</button>
+      <button class="viz-btn primary" onclick="tpNext()" id="tp-next">Next Step →</button>
+      <button class="viz-btn" onclick="tpAuto()">▶ Auto Play</button>
+    </div>
+  </div>
+
+  <h2>📝 Problem: Two Sum II (Sorted Array) — LeetCode 167</h2>
+  <div class="card card-accent">
+    <p><strong>Problem:</strong> Sorted array + target. Find two numbers that add to target. Return 1-indexed positions.</p>
+    <p><strong>Why Two Pointer works:</strong> Sorted array means if sum is too big, we need smaller numbers (move R left). If too small, we need bigger numbers (move L right). We can eliminate many pairs instantly!</p>
+    <div class="dry-run-box">arr = [2, 7, 11, 15], target = 9
+L=0 R=3: 2+15=17 > 9 → R--
+L=0 R=2: 2+11=13 > 9 → R--
+L=0 R=1: 2+7=9 = 9 ✅ → return [1,2]</div>
+  </div>
+  ${cpp(codeBlock('cpp','Two Sum II',cpp_two_sum))}
+  ${py(codeBlock('python','Two Sum II',py_two_sum))}
+
+  <h2>📐 Type 2: Same Direction — Fast &amp; Slow Pointers</h2>
+  <p>Both start at 0. <strong>Fast</strong> pointer explores ahead. <strong>Slow</strong> pointer marks the "valid boundary." Used for in-place modifications.</p>
+
+  <h2>📝 Problem: Remove Duplicates from Sorted Array — LeetCode 26</h2>
+  <div class="card card-green">
+    <p><strong>Story:</strong> slow = "last good unique position". fast = explorer. When fast finds something NEW (different from slow), write it at slow+1.</p>
+    <div class="dry-run-box">arr = [1, 1, 2, 3, 3, 4]
+slow=0 fast=1: arr[1]=1 = arr[0]=1 → same, skip
+slow=0 fast=2: arr[2]=2 ≠ arr[0]=1 → slow=1, arr[1]=2 ✓
+slow=1 fast=3: arr[3]=3 ≠ arr[1]=2 → slow=2, arr[2]=3 ✓
+slow=2 fast=4: arr[4]=3 = arr[2]=3 → same, skip
+slow=2 fast=5: arr[5]=4 ≠ arr[2]=3 → slow=3, arr[3]=4 ✓
+Result: [1,2,3,4,...] unique count = slow+1 = 4 ✅</div>
+  </div>
+  ${cpp(codeBlock('cpp','Remove Duplicates',cpp_rmdup))}
+  ${py(codeBlock('python','Remove Duplicates',py_rmdup))}
+
+  <h2>📝 Problem: Container with Most Water — LeetCode 11</h2>
+  <div class="card card-warn">
+    <p><strong>Key Insight:</strong> Water = min(height[L], height[R]) × (R-L). Start widest (L=0, R=n-1). Move the SHORTER wall inward — moving the taller wall can NEVER increase water (width decreases, and height is still limited by the shorter one).</p>
+    <div class="dry-run-box">heights = [1,8,6,2,5,4,8,3,7]
+L=0(1), R=8(7): water = min(1,7)×8 = 8. Move L (shorter)
+L=1(8), R=8(7): water = min(8,7)×7 = 49. Move R (shorter)
+L=1(8), R=7(3): water = min(8,3)×6 = 18. Move R
+... continue ...
+Max = 49 ✅</div>
+  </div>
+  ${cpp(codeBlock('cpp','Container with Most Water',cpp_water))}
+  ${py(codeBlock('python','Container with Most Water',py_water))}
+  <button class="mark-btn" onclick="markDone('twoptr')">✅ Mark Two Pointer as Done</button>`);
+}
+
+// ===== SLIDING WINDOW =====
+function buildSliding(){
+  const cpp_fixed=`<span class="kw">int</span> <span class="fn">maxSumSubarray</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; arr, <span class="kw">int</span> k) {
+    <span class="kw">int</span> n = arr.size();
+    <span class="cm">// Step 1: Build first window</span>
+    <span class="kw">int</span> winSum = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; k; i++) winSum += arr[i];
+    <span class="kw">int</span> maxSum = winSum;
+    <span class="cm">// Step 2: Slide — add new right, remove old left</span>
+    <span class="kw">for</span> (<span class="kw">int</span> R = k; R &lt; n; R++) {
+        winSum += arr[R] - arr[R - k];
+        maxSum = max(maxSum, winSum);
+    }
+    <span class="kw">return</span> maxSum;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`;
+  const py_fixed=`<span class="kw">def</span> <span class="fn">maxSumSubarray</span>(arr, k):
+    win_sum = <span class="kw">sum</span>(arr[:k])
+    max_sum = win_sum
+    <span class="kw">for</span> R <span class="kw">in</span> range(k, <span class="kw">len</span>(arr)):
+        win_sum += arr[R] - arr[R - k]  <span class="cm"># slide!</span>
+        max_sum = <span class="kw">max</span>(max_sum, win_sum)
+    <span class="kw">return</span> max_sum
+<span class="cm"># Time: O(n) | Space: O(1)</span>`;
+
+  const cpp_var=`<span class="kw">int</span> <span class="fn">lengthOfLongestSubstring</span>(<span class="type">string</span> s) {
+    <span class="type">unordered_map</span>&lt;<span class="kw">char</span>,<span class="kw">int</span>&gt; seen; <span class="cm">// char → last seen index</span>
+    <span class="kw">int</span> L = <span class="num">0</span>, maxLen = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> R = <span class="num">0</span>; R &lt; s.size(); R++) {
+        <span class="cm">// If char seen AND it's inside current window</span>
+        <span class="kw">if</span> (seen.count(s[R]) &amp;&amp; seen[s[R]] &gt;= L)
+            L = seen[s[R]] + <span class="num">1</span>; <span class="cm">// jump L past the duplicate</span>
+        seen[s[R]] = R;
+        maxLen = max(maxLen, R - L + <span class="num">1</span>);
+    }
+    <span class="kw">return</span> maxLen;
+} <span class="cm">// Time: O(n) | Space: O(min(n,128))</span>`;
+  const py_var=`<span class="kw">def</span> <span class="fn">lengthOfLongestSubstring</span>(s):
+    seen = {}   <span class="cm"># char → last seen index</span>
+    L = <span class="num">0</span>; max_len = <span class="num">0</span>
+    <span class="kw">for</span> R, char <span class="kw">in</span> <span class="kw">enumerate</span>(s):
+        <span class="cm"># If char in window, jump L past it</span>
+        <span class="kw">if</span> char <span class="kw">in</span> seen <span class="kw">and</span> seen[char] &gt;= L:
+            L = seen[char] + <span class="num">1</span>
+        seen[char] = R
+        max_len = <span class="kw">max</span>(max_len, R - L + <span class="num">1</span>)
+    <span class="kw">return</span> max_len
+<span class="cm"># Time: O(n) | Space: O(min(n,128))</span>`;
+
+  sec('sliding',`
+  <div class="section-tag tag-blue">🪟 Chapter 3</div>
+  <div class="page-title">Sliding Window Technique</div>
+  <p class="page-subtitle">The king of subarray/substring problems — turns O(n²) into O(n).</p>
+
+  <h2>🚂 The Train Window Story</h2>
+  <div class="card card-accent">
+    <p>You're on a train looking through a window. As the train moves, old scenery on the left disappears, new scenery enters from the right. You always see a fixed portion of landscape at any moment.</p>
+    <p><strong>In code:</strong> the array = landscape. The window = the subarray you examine. You slide it from left to right.</p>
+    <p style="margin-bottom:0"><strong>Fixed Window:</strong> Window size never changes (always see exactly k elements)<br>
+    <strong>Variable Window:</strong> You expand/shrink the window based on conditions</p>
+  </div>
+
+  <div class="info-box green">
+    <div class="info-box-title">🔗 Sliding Window IS Two Pointer!</div>
+    Left pointer (L) = left edge of window &nbsp;|&nbsp; Right pointer (R) = right edge<br>
+    Window size = R - L + 1<br>
+    Two Pointer = general concept. Sliding Window = its specialized use for contiguous subarrays.
+  </div>
+
+  <h2>🔒 Part 1: Fixed Window</h2>
+  <div class="card card-warn">
+    <h3 style="margin-top:0">🧠 The Key Insight: Don't Recalculate From Scratch!</h3>
+    <p>When window slides one step right:<br>
+    • New element ENTERS from right → add arr[R]<br>
+    • Old element LEAVES from left → subtract arr[R-k]<br>
+    • New sum = Old sum + arr[R] - arr[R-k] ← <span style="color:var(--accent2);font-weight:600">O(1) operation!</span></p>
+    <p>Without this insight: O(n×k). With it: <strong>O(n)</strong>. 🚀</p>
+  </div>
+
+  <h2>🎮 Interactive: Fixed Window Visualizer</h2>
+  <div class="visualizer">
+    <div class="viz-title">⚡ Fixed Window — Max Sum Subarray of Size 3</div>
+    <p style="font-size:.88rem;color:var(--text2);margin-bottom:16px">Array: [2,1,5,1,3,2] &nbsp; k=3 &nbsp; Find maximum sum</p>
+    <div class="viz-array-row" id="fw-arr"></div>
+    <div class="viz-stats">
+      <div class="viz-stat">Window Sum = <span id="fw-sum">-</span></div>
+      <div class="viz-stat">Max Sum = <span id="fw-max">-</span></div>
+      <div class="viz-stat">Window = [<span id="fw-range">-</span>]</div>
+    </div>
+    <div class="viz-msg" id="fw-msg">👈 Click "Next Step" to begin</div>
+    <div class="viz-controls">
+      <button class="viz-btn" onclick="fwReset()">↺ Reset</button>
+      <button class="viz-btn primary" onclick="fwNext()" id="fw-next">Next Step →</button>
+      <button class="viz-btn" onclick="fwAuto()">▶ Auto Play</button>
+    </div>
+  </div>
+
+  <h2>📝 Fixed Window: Max Sum Subarray of Size K</h2>
+  ${cpp(codeBlock('cpp','Max Sum Subarray (Fixed Window)',cpp_fixed))}
+  ${py(codeBlock('python','Max Sum Subarray (Fixed Window)',py_fixed))}
+
+  <h2>🔓 Part 2: Variable Window</h2>
+  <p>Window size is NOT fixed. Expand by moving R. When window becomes "invalid," shrink by moving L. This is the most powerful and flexible pattern.</p>
+
+  <div class="card card-purple">
+    <h3 style="margin-top:0">📋 Variable Window Template — MEMORIZE THIS</h3>
+    ${cpp(`<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot dot-r"></span><span class="code-dot dot-y"></span><span class="code-dot dot-g"></span></div><span>Variable Window Template — C++</span></div><pre><span class="kw">int</span> L = <span class="num">0</span>, answer = <span class="num">0</span>;
+<span class="cm">// some state tracking the window (map, int, set...)</span>
+
+<span class="kw">for</span> (<span class="kw">int</span> R = <span class="num">0</span>; R &lt; n; R++) {
+    <span class="cm">// 1. EXPAND: add arr[R] to window state</span>
+    add(arr[R]);
+
+    <span class="cm">// 2. SHRINK: while window is INVALID, remove from left</span>
+    <span class="kw">while</span> (isInvalid()) {
+        remove(arr[L]);
+        L++;
+    }
+
+    <span class="cm">// 3. UPDATE: window [L..R] is now valid</span>
+    answer = max(answer, R - L + <span class="num">1</span>);
+}
+<span class="kw">return</span> answer;</pre></div>`)}
+    ${py(`<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot dot-r"></span><span class="code-dot dot-y"></span><span class="code-dot dot-g"></span></div><span>Variable Window Template — Python</span></div><pre>L = <span class="num">0</span>; answer = <span class="num">0</span>
+<span class="cm"># some state tracking the window</span>
+
+<span class="kw">for</span> R <span class="kw">in</span> range(n):
+    <span class="cm"># 1. EXPAND: add arr[R] to window state</span>
+    add(arr[R])
+
+    <span class="cm"># 2. SHRINK: while window is INVALID, remove from left</span>
+    <span class="kw">while</span> is_invalid():
+        remove(arr[L])
+        L += <span class="num">1</span>
+
+    <span class="cm"># 3. UPDATE: window [L..R] is now valid</span>
+    answer = <span class="kw">max</span>(answer, R - L + <span class="num">1</span>)
+
+<span class="kw">return</span> answer</pre></div>`)}
+  </div>
+
+  <div class="info-box green">
+    <div class="info-box-title">💡 The Golden Rule of Variable Window</div>
+    <strong>EXPAND</strong> when window is valid (find max/longest) — R always moves right<br>
+    <strong>SHRINK</strong> when window becomes invalid — L moves right to restore validity<br>
+    <strong>UPDATE</strong> answer after restoring validity<br><br>
+    For MINIMUM window: update answer INSIDE the shrink loop (before making it invalid).
+  </div>
+
+  <h2>📝 Variable Window: Longest Substring Without Repeating Characters — LeetCode 3</h2>
+  <div class="card card-accent">
+    <p><strong>What makes window invalid?</strong> A character appears more than once!</p>
+    <p><strong>Track:</strong> A map of char → last seen index. When we see a duplicate inside the window, jump L past it.</p>
+    <div class="dry-run-box">s = "abcabcbb"
+R=0 'a': seen={a:0}, no dup. len=1
+R=1 'b': seen={a:0,b:1}, no dup. len=2
+R=2 'c': seen={..c:2}, no dup. len=3 ← max so far
+R=3 'a': 'a' seen at 0 ≥ L(0) → DUPLICATE! L=0+1=1
+  window="bca", seen[a]=3. len=3
+R=4 'b': 'b' seen at 1 ≥ L(1) → DUPLICATE! L=1+1=2
+  window="cab", seen[b]=4. len=3
+R=5 'c': 'c' seen at 2 ≥ L(2) → DUPLICATE! L=2+1=3
+  window="abc", seen[c]=5. len=3
+R=6 'b': 'b' seen at 4 ≥ L(3) → DUPLICATE! L=4+1=5
+  window="cb". len=2
+R=7 'b': 'b' seen at 6 ≥ L(5) → DUPLICATE! L=6+1=7
+  window="b". len=1
+Answer: 3 ✅</div>
+  </div>
+  ${cpp(codeBlock('cpp','Longest Substring No Repeat',cpp_var))}
+  ${py(codeBlock('python','Longest Substring No Repeat',py_var))}
+  <button class="mark-btn" onclick="markDone('sliding')">✅ Mark Sliding Window as Done</button>`);
+}
+
+// ===== DEEP PROBLEMS =====
+const DEEP = [
+  {id:1,title:"Three Sum",lc:"15",diff:"Medium",type:"Two Pointer",
+   prob:"Given integer array, find all unique triplets [a,b,c] such that a+b+c=0.",
+   brute:"Three nested loops — O(n³). For n=1000 → 1 billion operations.",
+   idea:"Sort array. Fix one element (i), use Two Pointer on rest to find pair summing to -arr[i]. Gives O(n²).",
+   dryrun:`arr = [-4,-1,-1,0,1,2] after sort
+i=0 (-4): find pair = 4 in [-1,-1,0,1,2]
+  L=1(-1),R=5(2): sum=1 < 4 → L++
+  L=2(-1),R=5(2): sum=1 < 4 → L++
+  ... no pair found
+i=1 (-1): find pair = 1 in [-1,0,1,2]
+  L=2(-1),R=5(2): sum=1 ✅ add [-1,-1,2]
+  Skip dup: L=3, R=4
+  L=3(0),R=4(1): sum=1 ✅ add [-1,0,1]
+i=2 (-1): same as i=1 → skip (dup)
+i=3 (0): find pair=0 in [1,2]
+  L=4(1),R=5(2): sum=3 > 0 → R-- → L≥R
+Answer: [[-1,-1,2],[-1,0,1]] ✅`,
+   cpp:`<span class="type">vector</span>&lt;<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&gt; <span class="fn">threeSum</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; nums) {
+    sort(nums.begin(), nums.end());
+    <span class="type">vector</span>&lt;<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&gt; res;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; (<span class="kw">int</span>)nums.size()-<span class="num">2</span>; i++) {
+        <span class="kw">if</span> (i &gt; <span class="num">0</span> &amp;&amp; nums[i]==nums[i-<span class="num">1</span>]) <span class="kw">continue</span>; <span class="cm">// skip dup i</span>
+        <span class="kw">int</span> L=i+<span class="num">1</span>, R=nums.size()-<span class="num">1</span>;
+        <span class="kw">while</span> (L &lt; R) {
+            <span class="kw">int</span> s = nums[i]+nums[L]+nums[R];
+            <span class="kw">if</span> (s==<span class="num">0</span>) {
+                res.push_back({nums[i],nums[L],nums[R]});
+                <span class="kw">while</span>(L&lt;R&amp;&amp;nums[L]==nums[L+<span class="num">1</span>])L++;
+                <span class="kw">while</span>(L&lt;R&amp;&amp;nums[R]==nums[R-<span class="num">1</span>])R--;
+                L++; R--;
+            } <span class="kw">else if</span> (s &lt; <span class="num">0</span>) L++;
+            <span class="kw">else</span> R--;
+        }
+    }
+    <span class="kw">return</span> res;
+} <span class="cm">// Time: O(n²) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">threeSum</span>(nums):
+    nums.sort(); res = []
+    <span class="kw">for</span> i <span class="kw">in</span> range(<span class="kw">len</span>(nums)-<span class="num">2</span>):
+        <span class="kw">if</span> i &gt; <span class="num">0</span> <span class="kw">and</span> nums[i]==nums[i-<span class="num">1</span>]: <span class="kw">continue</span>
+        L, R = i+<span class="num">1</span>, <span class="kw">len</span>(nums)-<span class="num">1</span>
+        <span class="kw">while</span> L &lt; R:
+            s = nums[i]+nums[L]+nums[R]
+            <span class="kw">if</span> s == <span class="num">0</span>:
+                res.append([nums[i],nums[L],nums[R]])
+                <span class="kw">while</span> L&lt;R <span class="kw">and</span> nums[L]==nums[L+<span class="num">1</span>]: L+=<span class="num">1</span>
+                <span class="kw">while</span> L&lt;R <span class="kw">and</span> nums[R]==nums[R-<span class="num">1</span>]: R-=<span class="num">1</span>
+                L+=<span class="num">1</span>; R-=<span class="num">1</span>
+            <span class="kw">elif</span> s &lt; <span class="num">0</span>: L+=<span class="num">1</span>
+            <span class="kw">else</span>: R-=<span class="num">1</span>
+    <span class="kw">return</span> res
+<span class="cm"># Time: O(n²) | Space: O(1)</span>`,
+   time:"O(n²)",space:"O(1)",
+   insight:"Sort enables Two Pointer. Fix one element = reduce to Two Sum. Always skip duplicate values to avoid duplicate triplets in result."},
+
+  {id:2,title:"Minimum Window Substring",lc:"76",diff:"Hard",type:"Sliding Window",
+   prob:"Find minimum length substring of s that contains all characters of t.",
+   brute:"Try every substring of s, check if it has all chars of t. O(n³).",
+   idea:"Variable sliding window. Track 'need' (what we need from t) and 'have' (how many distinct chars are satisfied in window). When have==want, window is valid → update min, try to shrink.",
+   dryrun:`s="ADOBECODEBANC", t="ABC"
+need={A:1,B:1,C:1}, want=3
+
+R=0(A):have=1 R=3(B):have=2 R=5(C):have=3 ← VALID!
+  minLen=6("ADOBEC"), shrink: remove A → have=2, L=1
+R=9(B): have=2 R=10(A): have=3 ← VALID!
+  "DOBECODEBA" len=10 > 6, shrink until L=6
+  Eventually: "BANC" len=4 ✅
+Answer: "BANC" ✅`,
+   cpp:`<span class="type">string</span> <span class="fn">minWindow</span>(<span class="type">string</span> s, <span class="type">string</span> t) {
+    <span class="type">unordered_map</span>&lt;<span class="kw">char</span>,<span class="kw">int</span>&gt; need, win;
+    <span class="kw">for</span> (<span class="kw">char</span> c:t) need[c]++;
+    <span class="kw">int</span> have=<span class="num">0</span>, want=need.size(), L=<span class="num">0</span>, minLen=INT_MAX, start=<span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> R=<span class="num">0</span>; R&lt;s.size(); R++) {
+        win[s[R]]++;
+        <span class="kw">if</span> (need.count(s[R]) &amp;&amp; win[s[R]]==need[s[R]]) have++;
+        <span class="kw">while</span> (have==want) {
+            <span class="kw">if</span> (R-L+<span class="num">1</span>&lt;minLen){minLen=R-L+<span class="num">1</span>;start=L;}
+            win[s[L]]--;
+            <span class="kw">if</span>(need.count(s[L])&amp;&amp;win[s[L]]&lt;need[s[L]])have--;
+            L++;
+        }
+    }
+    <span class="kw">return</span> minLen==INT_MAX?<span class="str">""</span>:s.substr(start,minLen);
+} <span class="cm">// Time: O(n+m) | Space: O(m)</span>`,
+   python:`<span class="kw">from</span> collections <span class="kw">import</span> Counter
+<span class="kw">def</span> <span class="fn">minWindow</span>(s, t):
+    need=Counter(t); win={}
+    have=<span class="num">0</span>; want=<span class="kw">len</span>(need)
+    L=<span class="num">0</span>; res=<span class="str">""</span>; min_len=float(<span class="str">'inf'</span>)
+    <span class="kw">for</span> R,c <span class="kw">in</span> <span class="kw">enumerate</span>(s):
+        win[c]=win.get(c,<span class="num">0</span>)+<span class="num">1</span>
+        <span class="kw">if</span> c <span class="kw">in</span> need <span class="kw">and</span> win[c]==need[c]: have+=<span class="num">1</span>
+        <span class="kw">while</span> have==want:
+            <span class="kw">if</span> R-L+<span class="num">1</span>&lt;min_len: min_len=R-L+<span class="num">1</span>; res=s[L:R+<span class="num">1</span>]
+            win[s[L]]-=<span class="num">1</span>
+            <span class="kw">if</span> s[L] <span class="kw">in</span> need <span class="kw">and</span> win[s[L]]&lt;need[s[L]]: have-=<span class="num">1</span>
+            L+=<span class="num">1</span>
+    <span class="kw">return</span> res
+<span class="cm"># Time: O(n+m) | Space: O(m)</span>`,
+   time:"O(n+m)",space:"O(m)",
+   insight:"'have' tracks how many distinct chars are fully satisfied. Update answer BEFORE shrinking (minimum window). This pattern works for ANY 'minimum window containing...' problem."},
+
+  {id:3,title:"Longest Repeating Character Replacement",lc:"424",diff:"Medium",type:"Sliding Window",
+   prob:"Given string s and k, find length of longest substring where you can replace at most k characters to make all chars the same.",
+   brute:"Try every substring, check if (length - maxFreq) ≤ k. O(n²).",
+   idea:"Variable sliding window. Key formula: replacements needed = windowSize - maxFreq. When this > k, shrink. Track maxFreq = frequency of most common char in window.",
+   dryrun:`s="AABABBA", k=1
+Valid when: (R-L+1) - maxFreq ≤ 1
+
+R=0:"A" freq{A:1} maxF=1. (1-1)=0≤1 ✓ len=1
+R=1:"AA" freq{A:2} maxF=2. (2-2)=0≤1 ✓ len=2
+R=2:"AAB" freq{A:2,B:1} maxF=2. (3-2)=1≤1 ✓ len=3
+R=3:"AABA" freq{A:3,B:1} maxF=3. (4-3)=1≤1 ✓ len=4
+R=4:"AABAB" freq{A:3,B:2} maxF=3. (5-3)=2>1 ✗
+  shrink: remove A(L=0), freq{A:2,B:2} → L=1. len stays 4
+R=5:"ABABB" freq{A:2,B:3} maxF=3. (5-3)=2>1 ✗
+  shrink: remove A(L=1), L=2. len stays 4
+R=6:"BABBA" maxF=3. (5-3)=2>1 ✗ shrink. len=4
+Answer: 4 ✅`,
+   cpp:`<span class="kw">int</span> <span class="fn">characterReplacement</span>(<span class="type">string</span> s, <span class="kw">int</span> k) {
+    <span class="kw">int</span> freq[<span class="num">26</span>]={}, L=<span class="num">0</span>, maxF=<span class="num">0</span>, res=<span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> R=<span class="num">0</span>; R&lt;s.size(); R++) {
+        maxF = max(maxF, ++freq[s[R]-<span class="str">'A'</span>]);
+        <span class="cm">// replacements needed = windowSize - maxFreq</span>
+        <span class="kw">if</span> (R-L+<span class="num">1</span> - maxF &gt; k) {
+            freq[s[L]-<span class="str">'A'</span>]--; L++;
+        }
+        res = max(res, R-L+<span class="num">1</span>);
+    }
+    <span class="kw">return</span> res;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">characterReplacement</span>(s, k):
+    freq = [<span class="num">0</span>]*<span class="num">26</span>; L=<span class="num">0</span>; max_f=<span class="num">0</span>; res=<span class="num">0</span>
+    <span class="kw">for</span> R <span class="kw">in</span> range(<span class="kw">len</span>(s)):
+        freq[<span class="kw">ord</span>(s[R])-<span class="kw">ord</span>(<span class="str">'A'</span>)] += <span class="num">1</span>
+        max_f = <span class="kw">max</span>(max_f, freq[<span class="kw">ord</span>(s[R])-<span class="kw">ord</span>(<span class="str">'A'</span>)])
+        <span class="kw">if</span> (R-L+<span class="num">1</span>) - max_f &gt; k:
+            freq[<span class="kw">ord</span>(s[L])-<span class="kw">ord</span>(<span class="str">'A'</span>)] -= <span class="num">1</span>; L+=<span class="num">1</span>
+        res = <span class="kw">max</span>(res, R-L+<span class="num">1</span>)
+    <span class="kw">return</span> res
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"replacements = windowSize - maxFreq. Window shrinks by exactly 1 (not a while loop!) because we never need to shrink more — we're looking for MAXIMUM length."},
+
+  {id:4,title:"Minimum Size Subarray Sum",lc:"209",diff:"Medium",type:"Sliding Window",
+   prob:"Given array of positive integers and target, find minimum length subarray with sum ≥ target.",
+   brute:"Try all subarrays. O(n²).",
+   idea:"Variable sliding window. Expand R, add to sum. When sum ≥ target, update answer and SHRINK from left to try finding smaller valid window.",
+   dryrun:`arr=[2,3,1,2,4,3], target=7, L=0 minLen=∞
+R=0:sum=2 R=1:sum=5 R=2:sum=6 R=3:sum=8≥7
+  minLen=4(L=0,R=3), shrink: remove 2→sum=6<7 stop
+R=4:sum=10≥7 minLen=min(4,3)=3 shrink: remove3→sum=7≥7
+  minLen=min(3,2)=2 shrink: remove1→sum=6<7 stop
+R=5:sum=9≥7 minLen=min(2,3)=2 shrink: remove2→sum=7≥7
+  minLen=min(2,2)=2 shrink: remove4→sum=3<7 stop
+Answer: 2 ✅ (subarray [4,3])`,
+   cpp:`<span class="kw">int</span> <span class="fn">minSubArrayLen</span>(<span class="kw">int</span> target, <span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; nums) {
+    <span class="kw">int</span> L=<span class="num">0</span>, sum=<span class="num">0</span>, res=INT_MAX;
+    <span class="kw">for</span> (<span class="kw">int</span> R=<span class="num">0</span>; R&lt;nums.size(); R++) {
+        sum += nums[R];
+        <span class="kw">while</span> (sum &gt;= target) {  <span class="cm">// shrink while valid</span>
+            res = min(res, R-L+<span class="num">1</span>);
+            sum -= nums[L++];
+        }
+    }
+    <span class="kw">return</span> res==INT_MAX ? <span class="num">0</span> : res;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">minSubArrayLen</span>(target, nums):
+    L=<span class="num">0</span>; total=<span class="num">0</span>; res=float(<span class="str">'inf'</span>)
+    <span class="kw">for</span> R <span class="kw">in</span> range(<span class="kw">len</span>(nums)):
+        total += nums[R]
+        <span class="kw">while</span> total &gt;= target:  <span class="cm"># shrink while valid</span>
+            res = <span class="kw">min</span>(res, R-L+<span class="num">1</span>)
+            total -= nums[L]; L+=<span class="num">1</span>
+    <span class="kw">return</span> <span class="num">0</span> <span class="kw">if</span> res==float(<span class="str">'inf'</span>) <span class="kw">else</span> res
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"For MINIMUM window: update answer INSIDE the while loop (while still valid), then keep shrinking. This is opposite to MAXIMUM window where you update after restoring validity."},
+
+  {id:5,title:"Fruits Into Baskets",lc:"904",diff:"Medium",type:"Sliding Window",
+   prob:"Find longest subarray with at most 2 distinct values. (You have 2 baskets, each holds 1 type of fruit.)",
+   brute:"Try every starting position. O(n²).",
+   idea:"This is 'Longest Subarray with At Most 2 Distinct Values.' Variable window. Map tracks fruit counts. When distinct > 2, shrink from left.",
+   dryrun:`fruits=[1,2,1,2,3], L=0 basket={}
+R=0:basket={1:1} R=1:basket={1:1,2:1} R=2:basket={1:2,2:1}
+R=3:basket={1:2,2:2} ← len=4 MAX so far
+R=4(3):basket={1:2,2:2,3:1} distinct=3>2 SHRINK!
+  remove 1(L=0)→1:1, still 3. L=1
+  remove 2(L=1)→2:1, still 3. L=2
+  remove 1(L=2)→del 1, distinct=2 ✓ L=3
+  basket={2:1,3:1} len=2
+Answer: 4 ✅`,
+   cpp:`<span class="kw">int</span> <span class="fn">totalFruit</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; f) {
+    <span class="type">unordered_map</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt; basket;
+    <span class="kw">int</span> L=<span class="num">0</span>, res=<span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> R=<span class="num">0</span>; R&lt;f.size(); R++) {
+        basket[f[R]]++;
+        <span class="kw">while</span> (basket.size()&gt;<span class="num">2</span>) {
+            <span class="kw">if</span>(--basket[f[L]]==<span class="num">0</span>) basket.erase(f[L]);
+            L++;
+        }
+        res = max(res, R-L+<span class="num">1</span>);
+    }
+    <span class="kw">return</span> res;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">totalFruit</span>(fruits):
+    basket={}; L=<span class="num">0</span>; res=<span class="num">0</span>
+    <span class="kw">for</span> R,f <span class="kw">in</span> <span class="kw">enumerate</span>(fruits):
+        basket[f]=basket.get(f,<span class="num">0</span>)+<span class="num">1</span>
+        <span class="kw">while</span> <span class="kw">len</span>(basket)&gt;<span class="num">2</span>:
+            basket[fruits[L]]-=<span class="num">1</span>
+            <span class="kw">if</span> basket[fruits[L]]==<span class="num">0</span>: <span class="kw">del</span> basket[fruits[L]]
+            L+=<span class="num">1</span>
+        res=<span class="kw">max</span>(res,R-L+<span class="num">1</span>)
+    <span class="kw">return</span> res
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"'At most 2 distinct' → replace 2 with k for 'at most k distinct'. One template, many problems!"},
+
+  {id:6,title:"Max Consecutive Ones III",lc:"1004",diff:"Medium",type:"Sliding Window",
+   prob:"Binary array + k. Find max length subarray with all 1s — you can flip at most k zeros.",
+   brute:"Try all subarrays, count zeros, check ≤ k. O(n²).",
+   idea:"Variable sliding window. Window is valid when zeros ≤ k. When zeros > k, shrink from left.",
+   dryrun:`nums=[1,1,1,0,0,0,1,1,1,1,0], k=2, L=0 zeros=0
+R=0-2: all 1s, zeros=0. maxLen=3
+R=3: 0, zeros=1 ≤ 2 ✓ maxLen=4
+R=4: 0, zeros=2 ≤ 2 ✓ maxLen=5
+R=5: 0, zeros=3 > 2 SHRINK:
+  nums[L=0]=1, L=1; nums[L=1]=1, L=2; nums[L=2]=1, L=3
+  nums[L=3]=0, zeros=2, L=4 ✓ stop
+R=6-9: 1s, zeros=2. maxLen=max(5, 9-4+1)=6
+R=10: 0, zeros=3 > 2 SHRINK: nums[4]=0, zeros=2, L=5 ✓
+  maxLen = max(6, 10-5+1) = 6
+Answer: 6 ✅`,
+   cpp:`<span class="kw">int</span> <span class="fn">longestOnes</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; nums, <span class="kw">int</span> k) {
+    <span class="kw">int</span> L=<span class="num">0</span>, zeros=<span class="num">0</span>, res=<span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> R=<span class="num">0</span>; R&lt;nums.size(); R++) {
+        <span class="kw">if</span> (nums[R]==<span class="num">0</span>) zeros++;
+        <span class="kw">while</span> (zeros&gt;k) {
+            <span class="kw">if</span> (nums[L]==<span class="num">0</span>) zeros--;
+            L++;
+        }
+        res=max(res,R-L+<span class="num">1</span>);
+    }
+    <span class="kw">return</span> res;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">longestOnes</span>(nums, k):
+    L=<span class="num">0</span>; zeros=<span class="num">0</span>; res=<span class="num">0</span>
+    <span class="kw">for</span> R <span class="kw">in</span> range(<span class="kw">len</span>(nums)):
+        <span class="kw">if</span> nums[R]==<span class="num">0</span>: zeros+=<span class="num">1</span>
+        <span class="kw">while</span> zeros&gt;k:
+            <span class="kw">if</span> nums[L]==<span class="num">0</span>: zeros-=<span class="num">1</span>
+            L+=<span class="num">1</span>
+        res=<span class="kw">max</span>(res,R-L+<span class="num">1</span>)
+    <span class="kw">return</span> res
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"'Flip at most k zeros' = 'at most k zeros allowed in window'. Generalizes to 'at most k of something'. Same pattern every time!"},
+
+  {id:7,title:"Permutation in String",lc:"567",diff:"Medium",type:"Sliding Window (Fixed)",
+   prob:"Return true if s2 contains a permutation of s1.",
+   brute:"Generate all permutations of s1, check if any is substring. O(n!×m).",
+   idea:"Fixed window of size |s1|. Two strings are anagrams iff same char frequencies. Slide window of size |s1| across s2, compare freq arrays.",
+   dryrun:`s1="ab", s2="eidbaooo", k=2
+need={a:1,b:1}
+Window "ei":{e:1,i:1} ≠ need
+Window "id":{i:1,d:1} ≠ need
+Window "db":{d:1,b:1} ≠ need
+Window "ba":{b:1,a:1} = need ✅ → return true!`,
+   cpp:`<span class="kw">bool</span> <span class="fn">checkInclusion</span>(<span class="type">string</span> s1, <span class="type">string</span> s2) {
+    <span class="kw">if</span> (s1.size()&gt;s2.size()) <span class="kw">return false</span>;
+    <span class="kw">int</span> need[<span class="num">26</span>]={}, win[<span class="num">26</span>]={}, k=s1.size();
+    <span class="kw">for</span> (<span class="kw">char</span> c:s1) need[c-<span class="str">'a'</span>]++;
+    <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;k;i++) win[s2[i]-<span class="str">'a'</span>]++;
+    <span class="kw">if</span> (!memcmp(need,win,<span class="kw">sizeof</span>(need))) <span class="kw">return true</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> R=k;R&lt;s2.size();R++) {
+        win[s2[R]-<span class="str">'a'</span>]++; win[s2[R-k]-<span class="str">'a'</span>]--;
+        <span class="kw">if</span> (!memcmp(need,win,<span class="kw">sizeof</span>(need))) <span class="kw">return true</span>;
+    }
+    <span class="kw">return false</span>;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">from</span> collections <span class="kw">import</span> Counter
+<span class="kw">def</span> <span class="fn">checkInclusion</span>(s1, s2):
+    <span class="kw">if</span> <span class="kw">len</span>(s1)&gt;<span class="kw">len</span>(s2): <span class="kw">return False</span>
+    need=Counter(s1); k=<span class="kw">len</span>(s1)
+    win=Counter(s2[:k])
+    <span class="kw">if</span> win==need: <span class="kw">return True</span>
+    <span class="kw">for</span> R <span class="kw">in</span> range(k,<span class="kw">len</span>(s2)):
+        win[s2[R]]+=<span class="num">1</span>
+        win[s2[R-k]]-=<span class="num">1</span>
+        <span class="kw">if</span> win[s2[R-k]]==<span class="num">0</span>: <span class="kw">del</span> win[s2[R-k]]
+        <span class="kw">if</span> win==need: <span class="kw">return True</span>
+    <span class="kw">return False</span>
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"Anagram = same char frequencies. Fixed window of size |s1|. This exact pattern also solves 'Find All Anagrams in String' (LC 438) — just collect indices."},
+
+  {id:8,title:"Trapping Rain Water",lc:"42",diff:"Hard",type:"Two Pointer",
+   prob:"Given elevation map, compute total water trapped after rain.",
+   brute:"For each position: scan left for max, scan right for max. water[i]=min(lMax,rMax)-h[i]. O(n²).",
+   idea:"Two Pointer. Track leftMax and rightMax. Water at a position = min(leftMax,rightMax)-height. Process the side with SMALLER max — we already know its contribution. O(n) time, O(1) space!",
+   dryrun:`heights=[0,1,0,2,1,0,1,3,2,1,2,1]
+L=0,R=11,lMax=0,rMax=0,water=0
+
+h[L]=0,h[R]=1: lMax=max(0,0)=0 ≤ rMax=max(0,1)=1
+  water += lMax-h[L] = 0-0=0. L=1
+h[L]=1,h[R]=1: lMax=1 ≤ rMax=1
+  water += 1-1=0. L=2
+h[L]=0: lMax=1 ≤ rMax=1
+  water += 1-0=1. L=3 [water=1]
+h[L]=2,h[R]=1: lMax=2 > rMax=1
+  water += rMax-h[R]=1-1=0. R=10
+...continuing...
+Final water = 6 ✅`,
+   cpp:`<span class="kw">int</span> <span class="fn">trap</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; h) {
+    <span class="kw">int</span> L=<span class="num">0</span>,R=h.size()-<span class="num">1</span>,lMax=<span class="num">0</span>,rMax=<span class="num">0</span>,water=<span class="num">0</span>;
+    <span class="kw">while</span>(L&lt;R){
+        lMax=max(lMax,h[L]); rMax=max(rMax,h[R]);
+        <span class="kw">if</span>(lMax&lt;=rMax){water+=lMax-h[L];L++;}
+        <span class="kw">else</span>{water+=rMax-h[R];R--;}
+    }
+    <span class="kw">return</span> water;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">trap</span>(height):
+    L,R=<span class="num">0</span>,<span class="kw">len</span>(height)-<span class="num">1</span>
+    l_max=r_max=water=<span class="num">0</span>
+    <span class="kw">while</span> L&lt;R:
+        l_max=<span class="kw">max</span>(l_max,height[L])
+        r_max=<span class="kw">max</span>(r_max,height[R])
+        <span class="kw">if</span> l_max&lt;=r_max: water+=l_max-height[L]; L+=<span class="num">1</span>
+        <span class="kw">else</span>: water+=r_max-height[R]; R-=<span class="num">1</span>
+    <span class="kw">return</span> water
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"Process the side with smaller max because that determines the water level. The other side guarantees the 'wall' is at least as tall. Elegant O(1) space vs O(n) for prefix array approach."},
+
+  {id:9,title:"Subarrays with K Different Integers",lc:"992",diff:"Hard",type:"Sliding Window",
+   prob:"Find number of subarrays with exactly k distinct integers.",
+   brute:"Try all subarrays, count distinct in each. O(n²).",
+   idea:"Exactly K = AtMost(K) - AtMost(K-1). Build atMost(k) helper using variable sliding window — count valid windows at each R.",
+   dryrun:`atMost(k): count subarrays with ≤k distinct
+For each R, valid windows ending at R = R-L+1
+
+arr=[1,2,1,2,3], k=2
+atMost(2)=9, atMost(1)=3
+exactly(2) = 9-3 = 7 ✅`,
+   cpp:`<span class="kw">int</span> <span class="fn">atMost</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; A, <span class="kw">int</span> k) {
+    <span class="type">unordered_map</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt; cnt;
+    <span class="kw">int</span> L=<span class="num">0</span>, res=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;A.size();R++){
+        cnt[A[R]]++;
+        <span class="kw">while</span>(cnt.size()&gt;k){
+            <span class="kw">if</span>(--cnt[A[L]]==<span class="num">0</span>)cnt.erase(A[L]);L++;
+        }
+        res += R-L+<span class="num">1</span>; <span class="cm">// all windows ending at R</span>
+    }
+    <span class="kw">return</span> res;
+}
+<span class="kw">int</span> <span class="fn">subarraysWithKDistinct</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; A,<span class="kw">int</span> k){
+    <span class="kw">return</span> atMost(A,k)-atMost(A,k-<span class="num">1</span>);
+} <span class="cm">// Time: O(n) | Space: O(k)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">subarraysWithKDistinct</span>(nums, k):
+    <span class="kw">def</span> <span class="fn">atMost</span>(k):
+        cnt={}; L=<span class="num">0</span>; res=<span class="num">0</span>
+        <span class="kw">for</span> R,v <span class="kw">in</span> <span class="kw">enumerate</span>(nums):
+            cnt[v]=cnt.get(v,<span class="num">0</span>)+<span class="num">1</span>
+            <span class="kw">while</span> <span class="kw">len</span>(cnt)&gt;k:
+                cnt[nums[L]]-=<span class="num">1</span>
+                <span class="kw">if</span> cnt[nums[L]]==<span class="num">0</span>: <span class="kw">del</span> cnt[nums[L]]
+                L+=<span class="num">1</span>
+            res+=R-L+<span class="num">1</span>
+        <span class="kw">return</span> res
+    <span class="kw">return</span> atMost(k)-atMost(k-<span class="num">1</span>)
+<span class="cm"># Time: O(n) | Space: O(k)</span>`,
+   time:"O(n)",space:"O(k)",
+   insight:"Exactly K = AtMost(K) - AtMost(K-1). This trick converts 'exactly' problems (harder) to 'at most' problems (easier). This is a KEY advanced trick!"},
+
+  {id:10,title:"Longest Subarray After Deleting One Element",lc:"1493",diff:"Medium",type:"Sliding Window",
+   prob:"Binary array. Delete exactly one element. Return length of longest subarray of 1s.",
+   brute:"Try deleting each element, find max consecutive 1s. O(n²).",
+   idea:"Same as 'at most 1 zero allowed in window'. Variable sliding window. When zeros > 1, shrink. Answer is R-L+1-1 (subtract the one deleted element).",
+   dryrun:`nums=[1,1,0,1], k=1 (allow 1 zero)
+L=0,zeros=0
+R=0,1: zeros=0 ✓ 
+R=2: zeros=1 ≤ 1 ✓ len=3
+R=3: zeros=1 ✓ len=4
+Answer = R-L+1-1 = 4-1 = 3 ✅`,
+   cpp:`<span class="kw">int</span> <span class="fn">longestSubarray</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; nums) {
+    <span class="kw">int</span> L=<span class="num">0</span>,zeros=<span class="num">0</span>,res=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;nums.size();R++){
+        <span class="kw">if</span>(nums[R]==<span class="num">0</span>) zeros++;
+        <span class="kw">while</span>(zeros&gt;<span class="num">1</span>){
+            <span class="kw">if</span>(nums[L]==<span class="num">0</span>)zeros--;L++;
+        }
+        res=max(res,R-L); <span class="cm">// R-L not R-L+1 (delete 1)</span>
+    }
+    <span class="kw">return</span> res;
+} <span class="cm">// Time: O(n) | Space: O(1)</span>`,
+   python:`<span class="kw">def</span> <span class="fn">longestSubarray</span>(nums):
+    L=zeros=res=<span class="num">0</span>
+    <span class="kw">for</span> R <span class="kw">in</span> range(<span class="kw">len</span>(nums)):
+        <span class="kw">if</span> nums[R]==<span class="num">0</span>: zeros+=<span class="num">1</span>
+        <span class="kw">while</span> zeros&gt;<span class="num">1</span>:
+            <span class="kw">if</span> nums[L]==<span class="num">0</span>: zeros-=<span class="num">1</span>
+            L+=<span class="num">1</span>
+        res=<span class="kw">max</span>(res,R-L)  <span class="cm"># R-L = window_size - 1 (for deleted element)</span>
+    <span class="kw">return</span> res
+<span class="cm"># Time: O(n) | Space: O(1)</span>`,
+   time:"O(n)",space:"O(1)",
+   insight:"'Delete exactly one element' = 'allow at most 1 zero in window, then subtract 1 from length'. Recognizing this disguise is the key skill!"}
+];
+
+function buildDeepProblems(){
+  let html=`<div class="section-tag tag-green">💡 Chapter 4</div>
+  <div class="page-title">Top 10 Deep Dives</div>
+  <p class="page-subtitle">Every problem: Brute force → Why it fails → Optimization insight → Dry run → Full code → Complexity.</p>`;
+  DEEP.forEach(p=>{
+    const dClass=p.diff==='Easy'?'diff-easy':p.diff==='Medium'?'diff-medium':'diff-hard';
+    html+=`<div class="prob-card" id="prob-${p.id}">
+      <div class="prob-header" onclick="toggleProb(${p.id})">
+        <div class="prob-meta">
+          <div class="prob-num">${p.id}</div>
+          <div class="prob-title">${p.title}</div>
+          <div class="prob-tags">
+            <span class="diff-badge ${dClass}">${p.diff}</span>
+            <span class="diff-badge" style="background:rgba(56,189,248,.1);color:var(--accent)">${p.type}</span>
+            <span class="diff-badge" style="background:var(--bg3);color:var(--text3)">LC #${p.lc}</span>
+          </div>
+        </div>
+        <span class="prob-chevron">▼</span>
+      </div>
+      <div class="prob-body">
+        <h3 style="margin-top:0;color:var(--accent)">📋 Problem</h3>
+        <p>${p.prob}</p>
+        <h3 style="color:var(--danger)">🐌 Brute Force</h3>
+        <p>${p.brute}</p>
+        <h3 style="color:var(--accent2)">⚡ Optimization Idea</h3>
+        <p>${p.idea}</p>
+        <h3 style="color:var(--warn)">📊 Dry Run (Step by Step)</h3>
+        <div class="dry-run-box">${p.dryrun}</div>
+        <h3 style="color:var(--accent)">💻 Code</h3>
+        <div class="cpp-only">${codeBlock('cpp',p.title,p.cpp)}</div>
+        <div class="py-only">${codeBlock('python',p.title,p.python)}</div>
+        <div class="complexity-row">
+          <div class="complexity-chip"><span class="clabel">Time</span><span class="cvalue">${p.time}</span></div>
+          <div class="complexity-chip"><span class="clabel">Space</span><span class="cvalue">${p.space}</span></div>
+        </div>
+        <div class="info-box green"><div class="info-box-title">🎯 Key Insight</div>${p.insight}</div>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="mark-btn" onclick="markDone('problems')">✅ Mark Deep Problems as Done</button>`;
+  sec('problems',html);
+}
+
+
+// ===== PRACTICE 30 =====
+const P30 = [
+  // EASY
+  {n:1,t:"Maximum Average Subarray I",d:"Easy",type:"SW Fixed",lc:"643",sol:"Fixed window of size k. Sum first k elements. Slide: add new, remove old. Track max average."},
+  {n:2,t:"Find Max Consecutive Ones",d:"Easy",type:"Two Pointer",lc:"485",sol:"Single pass. Track current streak of 1s. Reset on 0. No extra space needed."},
+  {n:3,t:"Move Zeroes",d:"Easy",type:"Two Pointer",lc:"283",sol:"Fast-slow pointers. Slow marks position for next non-zero. Fast scans all elements. When fast finds non-zero, swap with slow, slow++."},
+  {n:4,t:"Squares of Sorted Array",d:"Easy",type:"Two Pointer",lc:"977",sol:"Two pointers at both ends (largest absolute values). Compare squares, fill result from right to left."},
+  {n:5,t:"Valid Palindrome",d:"Easy",type:"Two Pointer",lc:"125",sol:"L from start, R from end. Skip non-alphanumeric. Compare chars (case insensitive). If mismatch → not palindrome."},
+  {n:6,t:"Merge Sorted Array",d:"Easy",type:"Two Pointer",lc:"88",sol:"Three pointers: p1 at end of nums1 valid, p2 at end of nums2, p3 at very end. Fill from right."},
+  {n:7,t:"Average of Subarrays of Size K",d:"Easy",type:"SW Fixed",lc:"N/A",sol:"Fixed window. Sum first k, then slide. Average = sum/k at each position."},
+  {n:8,t:"Count Occurrences of Anagrams",d:"Easy",type:"SW Fixed",lc:"N/A",sol:"Fixed window of size |pat|. Compare char freq maps. Count matches."},
+  {n:9,t:"First Negative in Every K Window",d:"Easy",type:"SW Fixed",lc:"N/A",sol:"Fixed window. Use queue to store indices of negatives. Front of queue = first negative. Dequeue when index out of window."},
+  {n:10,t:"Two Sum (Sorted)",d:"Easy",type:"Two Pointer",lc:"167",sol:"L=0, R=n-1. sum < target → L++. sum > target → R--. sum == target → return indices."},
+  // MEDIUM
+  {n:11,t:"Longest Substring with At Most K Distinct",d:"Medium",type:"SW Variable",lc:"340",sol:"Variable window. Map tracks char counts. While distinct > k, shrink from left. Update max length each step."},
+  {n:12,t:"Subarray Product Less Than K",d:"Medium",type:"SW Variable",lc:"713",sol:"Variable window. Product tracking. When product ≥ k, divide by left element, L++. Count = R-L+1 subarrays ending at R."},
+  {n:13,t:"4Sum",d:"Medium",type:"Two Pointer",lc:"18",sol:"Sort. Two outer loops (i,j). Inner two-pointer for remaining pair. Skip duplicates at each level."},
+  {n:14,t:"Longest Subarray with Sum ≤ K",d:"Medium",type:"SW Variable",lc:"N/A",sol:"Variable window (only works for non-negative). Expand R, when sum > K shrink from L."},
+  {n:15,t:"Count Subarrays with Sum = K",d:"Medium",type:"Prefix Sum+Map",lc:"560",sol:"Prefix sum + hashmap. count[prefix]=freq. For each prefix, check if prefix-k exists."},
+  {n:16,t:"Longest Turbulent Subarray",d:"Medium",type:"SW Variable",lc:"978",sol:"Variable window. Track if current element continues turbulent pattern. Reset L when pattern breaks."},
+  {n:17,t:"Replace the Substring for Balanced String",d:"Medium",type:"SW Variable",lc:"1234",sol:"Count char freq. Target = n/4 each. Minimum window where all overflowing chars are inside window."},
+  {n:18,t:"Maximum Points from Cards",d:"Medium",type:"SW Fixed",lc:"1423",sol:"Take k cards from start or end. Fixed window of size (n-k) in middle. Minimize middle sum = maximize card sum."},
+  {n:19,t:"Grumpy Bookstore Owner",d:"Medium",type:"SW Fixed",lc:"1052",sol:"Count always-satisfied customers. Fixed window of size k for grumpy minutes. Max extra customers when grumpy suppressed."},
+  {n:20,t:"Max Consecutive Ones II",d:"Medium",type:"SW Variable",lc:"487",sol:"Allow at most 1 zero. Variable window. When zeros > 1, shrink. Same as LC 1004 with k=1."},
+  {n:21,t:"Minimum Operations to Reduce X to Zero",d:"Medium",type:"SW Variable",lc:"1658",sol:"Remove elements from either end summing to x. Equivalent: find longest subarray with sum = total-x!"},
+  {n:22,t:"Max Sum of Two Non-Overlapping Subarrays",d:"Medium",type:"SW Fixed",lc:"1031",sol:"Two fixed windows of sizes L and M. Track max L-window seen, add to M-window starting after it."},
+  // HARD
+  {n:23,t:"Sliding Window Maximum",d:"Hard",type:"SW + Deque",lc:"239",sol:"Fixed window. Monotonic deque stores indices in decreasing order of values. Front = max. Remove indices out of window."},
+  {n:24,t:"Minimum Window Substring",d:"Hard",type:"SW Variable",lc:"76",sol:"Track need vs have. Expand until have==want. Then shrink to minimize. See Deep Dive #2."},
+  {n:25,t:"Subarrays with K Different Integers",d:"Hard",type:"SW Variable",lc:"992",sol:"Exactly(k) = AtMost(k) - AtMost(k-1). See Deep Dive #9."},
+  {n:26,t:"Trapping Rain Water",d:"Hard",type:"Two Pointer",lc:"42",sol:"Two pointers. Track leftMax, rightMax. Process side with smaller max. See Deep Dive #8."},
+  {n:27,t:"Minimum Number of Flips to Make Binary String",d:"Hard",type:"SW Fixed",lc:"1888",sol:"Fixed window with sliding. Count mismatches for two patterns. Take minimum."},
+  {n:28,t:"Count Subarrays Where Max ≥ K",d:"Hard",type:"SW Variable",lc:"2962",sol:"Two-pointer approach. For each R where arr[R]≥K, count valid L positions."},
+  {n:29,t:"Shortest Subarray with Sum at Least K",d:"Hard",type:"Deque+Prefix",lc:"862",sol:"Prefix sums + monotonic deque. For each R, find leftmost L where prefix[R]-prefix[L]≥K."},
+  {n:30,t:"Minimum Window Containing All Characters",d:"Hard",type:"SW Variable",lc:"76",sol:"Generalization of Min Window Substring. Same have/want pattern with full freq map tracking."}
+];
+
+function buildPractice30(){
+  let html=`<div class="section-tag tag-warn">🏋️ Chapter 5</div>
+  <div class="page-title">30 Practice Problems</div>
+  <p class="page-subtitle">Easy → Hard. Click any problem to see the approach and solution hint.</p>
+  <div class="grid-3" style="margin-bottom:20px">
+    <div class="card" style="text-align:center;padding:16px"><div style="font-size:1.5rem">🟢</div><div style="font-family:Outfit;font-weight:700;margin:4px 0">Easy</div><div style="color:var(--text3);font-size:.82rem">Problems 1–10</div></div>
+    <div class="card" style="text-align:center;padding:16px"><div style="font-size:1.5rem">🟡</div><div style="font-family:Outfit;font-weight:700;margin:4px 0">Medium</div><div style="color:var(--text3);font-size:.82rem">Problems 11–22</div></div>
+    <div class="card" style="text-align:center;padding:16px"><div style="font-size:1.5rem">🔴</div><div style="font-family:Outfit;font-weight:700;margin:4px 0">Hard</div><div style="color:var(--text3);font-size:.82rem">Problems 23–30</div></div>
+  </div>`;
+  P30.forEach(p=>{
+    const dClass=p.d==='Easy'?'diff-easy':p.d==='Medium'?'diff-medium':'diff-hard';
+    html+=`<div class="prob-card" id="p30-${p.n}">
+      <div class="prob-header" onclick="this.closest('.prob-card').classList.toggle('open')">
+        <div class="prob-meta">
+          <div class="prob-num">${p.n}</div>
+          <div class="prob-title">${p.t}</div>
+          <div class="prob-tags">
+            <span class="diff-badge ${dClass}">${p.d}</span>
+            <span class="diff-badge" style="background:rgba(56,189,248,.1);color:var(--accent)">${p.type}</span>
+            ${p.lc!=='N/A'?`<span class="diff-badge" style="background:var(--bg3);color:var(--text3)">LC #${p.lc}</span>`:''}
+          </div>
+        </div>
+        <span class="prob-chevron">▼</span>
+      </div>
+      <div class="prob-body">
+        <div class="info-box green"><div class="info-box-title">💡 Approach &amp; Key Insight</div>${p.sol}</div>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="mark-btn" onclick="markDone('practice30')">✅ Mark Practice as Done</button>`;
+  sec('practice30',html);
+}
+
+
+// ===== LEETCODE TOP 20 =====
+const LC20 = [
+  {n:1,t:"Two Sum II",lc:"167",d:"Easy",type:"Two Pointer",
+   sol:`Sorted array. L=0, R=n-1. sum&lt;target→L++, sum&gt;target→R--, found→return.`,
+   cpp:`<span class="type">vector</span>&lt;<span class="kw">int</span>&gt; <span class="fn">twoSum</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; n,<span class="kw">int</span> t){
+  <span class="kw">int</span> L=<span class="num">0</span>,R=n.size()-<span class="num">1</span>;
+  <span class="kw">while</span>(L&lt;R){<span class="kw">int</span> s=n[L]+n[R];
+    <span class="kw">if</span>(s==t)<span class="kw">return</span>{L+<span class="num">1</span>,R+<span class="num">1</span>};
+    s&lt;t?L++:R--;}
+  <span class="kw">return</span>{};}`,
+   python:`<span class="kw">def</span> <span class="fn">twoSum</span>(nums,t):
+  L,R=<span class="num">0</span>,<span class="kw">len</span>(nums)-<span class="num">1</span>
+  <span class="kw">while</span> L&lt;R:
+    s=nums[L]+nums[R]
+    <span class="kw">if</span> s==t:<span class="kw">return</span>[L+<span class="num">1</span>,R+<span class="num">1</span>]
+    <span class="kw">elif</span> s&lt;t:L+=<span class="num">1</span>
+    <span class="kw">else</span>:R-=<span class="num">1</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:2,t:"Longest Substring Without Repeating Characters",lc:"3",d:"Medium",type:"SW Variable",
+   sol:`Variable window. Map char→last index. When dup found inside window, jump L past it. Track max length.`,
+   cpp:`<span class="kw">int</span> <span class="fn">lLS</span>(<span class="type">string</span> s){
+  <span class="type">unordered_map</span>&lt;<span class="kw">char</span>,<span class="kw">int</span>&gt; m;
+  <span class="kw">int</span> L=<span class="num">0</span>,res=<span class="num">0</span>;
+  <span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;s.size();R++){
+    <span class="kw">if</span>(m.count(s[R])&amp;&amp;m[s[R]]&gt;=L)
+      L=m[s[R]]+<span class="num">1</span>;
+    m[s[R]]=R;
+    res=max(res,R-L+<span class="num">1</span>);}
+  <span class="kw">return</span> res;}`,
+   python:`<span class="kw">def</span> <span class="fn">lengthOfLongestSubstring</span>(s):
+  seen={}; L=res=<span class="num">0</span>
+  <span class="kw">for</span> R,c <span class="kw">in</span> <span class="kw">enumerate</span>(s):
+    <span class="kw">if</span> c <span class="kw">in</span> seen <span class="kw">and</span> seen[c]&gt;=L:
+      L=seen[c]+<span class="num">1</span>
+    seen[c]=R
+    res=<span class="kw">max</span>(res,R-L+<span class="num">1</span>)
+  <span class="kw">return</span> res`,time:"O(n)",space:"O(1)"},
+
+  {n:3,t:"Minimum Window Substring",lc:"76",d:"Hard",type:"SW Variable",
+   sol:`Track need(t freq) vs win(window freq). have==want → window valid → update min → shrink. See Deep Dive #2.`,
+   cpp:`<span class="cm">// See Deep Dive #2 for full solution</span>
+<span class="cm">// Key: have==want means all chars satisfied</span>
+<span class="cm">// Update INSIDE while (minimum window)</span>`,
+   python:`<span class="cm"># See Deep Dive #2 for full solution</span>
+<span class="cm"># Key: have==want means all chars satisfied</span>
+<span class="cm"># Update INSIDE while (minimum window)</span>`,time:"O(n+m)",space:"O(m)"},
+
+  {n:4,t:"Container With Most Water",lc:"11",d:"Medium",type:"Two Pointer",
+   sol:`L=0,R=n-1. water=min(h[L],h[R])×(R-L). Move shorter wall inward.`,
+   cpp:`<span class="kw">int</span> <span class="fn">maxArea</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; h){
+  <span class="kw">int</span> L=<span class="num">0</span>,R=h.size()-<span class="num">1</span>,mx=<span class="num">0</span>;
+  <span class="kw">while</span>(L&lt;R){
+    mx=max(mx,min(h[L],h[R])*(R-L));
+    h[L]&lt;h[R]?L++:R--;}
+  <span class="kw">return</span> mx;}`,
+   python:`<span class="kw">def</span> <span class="fn">maxArea</span>(h):
+  L,R,mx=<span class="num">0</span>,<span class="kw">len</span>(h)-<span class="num">1</span>,<span class="num">0</span>
+  <span class="kw">while</span> L&lt;R:
+    mx=<span class="kw">max</span>(mx,<span class="kw">min</span>(h[L],h[R])*(R-L))
+    <span class="kw">if</span> h[L]&lt;h[R]:L+=<span class="num">1</span>
+    <span class="kw">else</span>:R-=<span class="num">1</span>
+  <span class="kw">return</span> mx`,time:"O(n)",space:"O(1)"},
+
+  {n:5,t:"3Sum",lc:"15",d:"Medium",type:"Two Pointer",
+   sol:`Sort. Fix i, two-pointer for rest. Skip duplicates. See Deep Dive #1.`,
+   cpp:`<span class="cm">// See Deep Dive #1 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #1 for full solution</span>`,time:"O(n²)",space:"O(1)"},
+
+  {n:6,t:"Maximum Subarray",lc:"53",d:"Medium",type:"Kadane's",
+   sol:`Kadane's algorithm: currSum = max(num, currSum+num). Track maxSum. This is a special case of variable window.`,
+   cpp:`<span class="kw">int</span> <span class="fn">maxSubArray</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; n){
+  <span class="kw">int</span> cur=n[<span class="num">0</span>],mx=n[<span class="num">0</span>];
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>;i&lt;n.size();i++){
+    cur=max(n[i],cur+n[i]);
+    mx=max(mx,cur);}
+  <span class="kw">return</span> mx;}`,
+   python:`<span class="kw">def</span> <span class="fn">maxSubArray</span>(nums):
+  cur=mx=nums[<span class="num">0</span>]
+  <span class="kw">for</span> n <span class="kw">in</span> nums[<span class="num">1</span>:]:
+    cur=<span class="kw">max</span>(n,cur+n)
+    mx=<span class="kw">max</span>(mx,cur)
+  <span class="kw">return</span> mx`,time:"O(n)",space:"O(1)"},
+
+  {n:7,t:"Maximum Sum Subarray of Size K",lc:"N/A",d:"Easy",type:"SW Fixed",
+   sol:`Fixed window. Build first k sum. Slide: +arr[R] -arr[R-k]. Track max.`,
+   cpp:`<span class="kw">int</span> <span class="fn">maxSum</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; a,<span class="kw">int</span> k){
+  <span class="kw">int</span> s=<span class="num">0</span>;
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i&lt;k;i++)s+=a[i];
+  <span class="kw">int</span> mx=s;
+  <span class="kw">for</span>(<span class="kw">int</span> R=k;R&lt;a.size();R++){
+    s+=a[R]-a[R-k];mx=max(mx,s);}
+  <span class="kw">return</span> mx;}`,
+   python:`<span class="kw">def</span> <span class="fn">maxSum</span>(arr,k):
+  s=<span class="kw">sum</span>(arr[:k]);mx=s
+  <span class="kw">for</span> R <span class="kw">in</span> range(k,<span class="kw">len</span>(arr)):
+    s+=arr[R]-arr[R-k]
+    mx=<span class="kw">max</span>(mx,s)
+  <span class="kw">return</span> mx`,time:"O(n)",space:"O(1)"},
+
+  {n:8,t:"Permutation in String",lc:"567",d:"Medium",type:"SW Fixed",
+   sol:`Fixed window = len(s1). Compare char freq arrays. See Deep Dive #7.`,
+   cpp:`<span class="cm">// See Deep Dive #7 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #7 for full solution</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:9,t:"Minimum Size Subarray Sum",lc:"209",d:"Medium",type:"SW Variable",
+   sol:`Variable window. Expand R. While sum≥target, update min, shrink L. See Deep Dive #4.`,
+   cpp:`<span class="cm">// See Deep Dive #4 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #4 for full solution</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:10,t:"Fruits Into Baskets",lc:"904",d:"Medium",type:"SW Variable",
+   sol:`At most 2 distinct values. Map tracks counts. When distinct>2, shrink. See Deep Dive #5.`,
+   cpp:`<span class="cm">// See Deep Dive #5 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #5 for full solution</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:11,t:"Trapping Rain Water",lc:"42",d:"Hard",type:"Two Pointer",
+   sol:`Two pointers, lMax/rMax. Process smaller-max side. See Deep Dive #8.`,
+   cpp:`<span class="cm">// See Deep Dive #8 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #8 for full solution</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:12,t:"Sliding Window Maximum",lc:"239",d:"Hard",type:"SW+Deque",
+   sol:`Fixed window with monotonic deque. Deque stores indices in decreasing value order. Front = max of window.`,
+   cpp:`<span class="type">vector</span>&lt;<span class="kw">int</span>&gt; <span class="fn">maxSlidingWindow</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; a,<span class="kw">int</span> k){
+  <span class="type">deque</span>&lt;<span class="kw">int</span>&gt; dq; <span class="type">vector</span>&lt;<span class="kw">int</span>&gt; res;
+  <span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;a.size();R++){
+    <span class="kw">while</span>(!dq.empty()&amp;&amp;a[dq.back()]&lt;=a[R])dq.pop_back();
+    dq.push_back(R);
+    <span class="kw">if</span>(dq.front()&lt;=R-k)dq.pop_front();
+    <span class="kw">if</span>(R&gt;=k-<span class="num">1</span>)res.push_back(a[dq.front()]);}
+  <span class="kw">return</span> res;}`,
+   python:`<span class="kw">from</span> collections <span class="kw">import</span> deque
+<span class="kw">def</span> <span class="fn">maxSlidingWindow</span>(a,k):
+  dq,res=deque(),[]
+  <span class="kw">for</span> R,v <span class="kw">in</span> <span class="kw">enumerate</span>(a):
+    <span class="kw">while</span> dq <span class="kw">and</span> a[dq[-<span class="num">1</span>]]&lt;=v:dq.pop()
+    dq.append(R)
+    <span class="kw">if</span> dq[<span class="num">0</span>]&lt;=R-k:dq.popleft()
+    <span class="kw">if</span> R&gt;=k-<span class="num">1</span>:res.append(a[dq[<span class="num">0</span>]])
+  <span class="kw">return</span> res`,time:"O(n)",space:"O(k)"},
+
+  {n:13,t:"Longest Repeating Character Replacement",lc:"424",d:"Medium",type:"SW Variable",
+   sol:`See Deep Dive #3. Key: (windowSize - maxFreq) > k means window invalid.`,
+   cpp:`<span class="cm">// See Deep Dive #3 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #3 for full solution</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:14,t:"Remove Duplicates from Sorted Array",lc:"26",d:"Easy",type:"Two Pointer",
+   sol:`Fast-slow pointers. Slow = last unique. When fast finds new value, place at slow+1.`,
+   cpp:`<span class="kw">int</span> <span class="fn">removeDuplicates</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; n){
+  <span class="kw">int</span> s=<span class="num">0</span>;
+  <span class="kw">for</span>(<span class="kw">int</span> f=<span class="num">1</span>;f&lt;n.size();f++)
+    <span class="kw">if</span>(n[f]!=n[s])n[++s]=n[f];
+  <span class="kw">return</span> s+<span class="num">1</span>;}`,
+   python:`<span class="kw">def</span> <span class="fn">removeDuplicates</span>(n):
+  s=<span class="num">0</span>
+  <span class="kw">for</span> f <span class="kw">in</span> range(<span class="num">1</span>,<span class="kw">len</span>(n)):
+    <span class="kw">if</span> n[f]!=n[s]:s+=<span class="num">1</span>;n[s]=n[f]
+  <span class="kw">return</span> s+<span class="num">1</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:15,t:"Move Zeroes",lc:"283",d:"Easy",type:"Two Pointer",
+   sol:`Slow tracks next non-zero position. Fast scans. When fast finds non-zero, swap with slow, slow++.`,
+   cpp:`<span class="kw">void</span> <span class="fn">moveZeroes</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; n){
+  <span class="kw">int</span> s=<span class="num">0</span>;
+  <span class="kw">for</span>(<span class="kw">int</span> f=<span class="num">0</span>;f&lt;n.size();f++)
+    <span class="kw">if</span>(n[f])swap(n[s++],n[f]);}`,
+   python:`<span class="kw">def</span> <span class="fn">moveZeroes</span>(nums):
+  s=<span class="num">0</span>
+  <span class="kw">for</span> f <span class="kw">in</span> range(<span class="kw">len</span>(nums)):
+    <span class="kw">if</span> nums[f]:
+      nums[s],nums[f]=nums[f],nums[s]
+      s+=<span class="num">1</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:16,t:"Max Consecutive Ones III",lc:"1004",d:"Medium",type:"SW Variable",
+   sol:`See Deep Dive #6. Allow at most k zeros in window.`,
+   cpp:`<span class="cm">// See Deep Dive #6 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #6 for full solution</span>`,time:"O(n)",space:"O(1)"},
+
+  {n:17,t:"Find All Anagrams in String",lc:"438",d:"Medium",type:"SW Fixed",
+   sol:`Fixed window of size |p|. Compare freq arrays. Collect all start indices where match.`,
+   cpp:`<span class="type">vector</span>&lt;<span class="kw">int</span>&gt; <span class="fn">findAnagrams</span>(<span class="type">string</span> s,<span class="type">string</span> p){
+  <span class="kw">int</span> nd[<span class="num">26</span>]={},wn[<span class="num">26</span>]={},k=p.size();
+  <span class="type">vector</span>&lt;<span class="kw">int</span>&gt; r;
+  <span class="kw">for</span>(<span class="kw">char</span> c:p)nd[c-<span class="str">'a'</span>]++;
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i&lt;k;i++)wn[s[i]-<span class="str">'a'</span>]++;
+  <span class="kw">if</span>(!memcmp(nd,wn,<span class="kw">sizeof</span>(nd)))r.push_back(<span class="num">0</span>);
+  <span class="kw">for</span>(<span class="kw">int</span> R=k;R&lt;s.size();R++){
+    wn[s[R]-<span class="str">'a'</span>]++;wn[s[R-k]-<span class="str">'a'</span>]--;
+    <span class="kw">if</span>(!memcmp(nd,wn,<span class="kw">sizeof</span>(nd)))r.push_back(R-k+<span class="num">1</span>);}
+  <span class="kw">return</span> r;}`,
+   python:`<span class="kw">from</span> collections <span class="kw">import</span> Counter
+<span class="kw">def</span> <span class="fn">findAnagrams</span>(s,p):
+  nd=Counter(p);k=<span class="kw">len</span>(p)
+  wn=Counter(s[:k]);r=[]
+  <span class="kw">if</span> wn==nd:r.append(<span class="num">0</span>)
+  <span class="kw">for</span> R <span class="kw">in</span> range(k,<span class="kw">len</span>(s)):
+    wn[s[R]]+=<span class="num">1</span>;wn[s[R-k]]-=<span class="num">1</span>
+    <span class="kw">if</span> wn[s[R-k]]==<span class="num">0</span>:<span class="kw">del</span> wn[s[R-k]]
+    <span class="kw">if</span> wn==nd:r.append(R-k+<span class="num">1</span>)
+  <span class="kw">return</span> r`,time:"O(n)",space:"O(1)"},
+
+  {n:18,t:"Subarray Product Less Than K",lc:"713",d:"Medium",type:"SW Variable",
+   sol:`Variable window. Product tracking. When product≥k, divide left out, L++. Count += R-L+1 subarrays ending at R.`,
+   cpp:`<span class="kw">int</span> <span class="fn">numSubarrayProductLessThanK</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; n,<span class="kw">int</span> k){
+  <span class="kw">if</span>(k&lt;=<span class="num">1</span>)<span class="kw">return</span> <span class="num">0</span>;
+  <span class="kw">int</span> L=<span class="num">0</span>,prod=<span class="num">1</span>,res=<span class="num">0</span>;
+  <span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;n.size();R++){
+    prod*=n[R];
+    <span class="kw">while</span>(prod&gt;=k){prod/=n[L++];}
+    res+=R-L+<span class="num">1</span>;}
+  <span class="kw">return</span> res;}`,
+   python:`<span class="kw">def</span> <span class="fn">numSubarrayProductLessThanK</span>(nums,k):
+  <span class="kw">if</span> k&lt;=<span class="num">1</span>:<span class="kw">return</span> <span class="num">0</span>
+  L=<span class="num">0</span>;prod=<span class="num">1</span>;res=<span class="num">0</span>
+  <span class="kw">for</span> R,v <span class="kw">in</span> <span class="kw">enumerate</span>(nums):
+    prod*=v
+    <span class="kw">while</span> prod&gt;=k:prod//=nums[L];L+=<span class="num">1</span>
+    res+=R-L+<span class="num">1</span>
+  <span class="kw">return</span> res`,time:"O(n)",space:"O(1)"},
+
+  {n:19,t:"Subarrays with K Different Integers",lc:"992",d:"Hard",type:"SW Variable",
+   sol:`See Deep Dive #9. Exactly(K) = AtMost(K) - AtMost(K-1).`,
+   cpp:`<span class="cm">// See Deep Dive #9 for full solution</span>`,
+   python:`<span class="cm"># See Deep Dive #9 for full solution</span>`,time:"O(n)",space:"O(k)"},
+
+  {n:20,t:"Minimum Operations to Reduce X to Zero",lc:"1658",d:"Medium",type:"SW Variable",
+   sol:`Invert! Find LONGEST subarray with sum = total-x. Answer = n - length of that subarray.`,
+   cpp:`<span class="kw">int</span> <span class="fn">minOperations</span>(<span class="type">vector</span>&lt;<span class="kw">int</span>&gt;&amp; n,<span class="kw">int</span> x){
+  <span class="kw">int</span> t=<span class="num">0</span>; <span class="kw">for</span>(<span class="kw">auto</span> v:n)t+=v;
+  <span class="kw">int</span> target=t-x,L=<span class="num">0</span>,cur=<span class="num">0</span>,best=-<span class="num">1</span>;
+  <span class="kw">if</span>(target&lt;<span class="num">0</span>)<span class="kw">return</span>-<span class="num">1</span>;
+  <span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;n.size();R++){
+    cur+=n[R];
+    <span class="kw">while</span>(cur&gt;target)cur-=n[L++];
+    <span class="kw">if</span>(cur==target)best=max(best,R-L+<span class="num">1</span>);}
+  <span class="kw">return</span> best==-<span class="num">1</span>?-<span class="num">1</span>:(n.size()-best);}`,
+   python:`<span class="kw">def</span> <span class="fn">minOperations</span>(nums,x):
+  total=<span class="kw">sum</span>(nums);target=total-x
+  <span class="kw">if</span> target&lt;<span class="num">0</span>:<span class="kw">return</span>-<span class="num">1</span>
+  L=cur=<span class="num">0</span>;best=-<span class="num">1</span>
+  <span class="kw">for</span> R,v <span class="kw">in</span> <span class="kw">enumerate</span>(nums):
+    cur+=v
+    <span class="kw">while</span> cur&gt;target:cur-=nums[L];L+=<span class="num">1</span>
+    <span class="kw">if</span> cur==target:best=<span class="kw">max</span>(best,R-L+<span class="num">1</span>)
+  <span class="kw">return</span> -<span class="num">1</span> <span class="kw">if</span> best==-<span class="num">1</span> <span class="kw">else</span> <span class="kw">len</span>(nums)-best`,time:"O(n)",space:"O(1)"}
+];
+
+function buildLeetcode(){
+  let html=`<div class="section-tag tag-purple">🎯 Chapter 6</div>
+  <div class="page-title">LeetCode Top 20</div>
+  <p class="page-subtitle">The most important LC problems with full solutions. Master these = master the patterns.</p>`;
+  LC20.forEach(p=>{
+    const dClass=p.d==='Easy'?'diff-easy':p.d==='Medium'?'diff-medium':'diff-hard';
+    html+=`<div class="prob-card" id="lc-${p.n}">
+      <div class="prob-header" onclick="this.closest('.prob-card').classList.toggle('open')">
+        <div class="prob-meta">
+          <div class="prob-num">${p.n}</div>
+          <div class="prob-title">${p.t}</div>
+          <div class="prob-tags">
+            <span class="diff-badge ${dClass}">${p.d}</span>
+            <span class="diff-badge" style="background:rgba(56,189,248,.1);color:var(--accent)">${p.type}</span>
+            ${p.lc!=='N/A'?`<span class="diff-badge" style="background:var(--bg3);color:var(--text3)">LC #${p.lc}</span>`:''}
+          </div>
+        </div>
+        <span class="prob-chevron">▼</span>
+      </div>
+      <div class="prob-body">
+        <div class="info-box"><div class="info-box-title">💡 Approach</div>${p.sol}</div>
+        <div class="complexity-row">
+          <div class="complexity-chip"><span class="clabel">Time</span><span class="cvalue">${p.time}</span></div>
+          <div class="complexity-chip"><span class="clabel">Space</span><span class="cvalue">${p.space}</span></div>
+        </div>
+        <div class="cpp-only">${codeBlock('cpp',p.t,p.cpp)}</div>
+        <div class="py-only">${codeBlock('python',p.t,p.python)}</div>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="mark-btn" onclick="markDone('leetcode')">✅ Mark LeetCode as Done</button>`;
+  sec('leetcode',html);
+}
+
+
+// ===== PATTERN GUIDE =====
+function buildPattern(){
+  sec('pattern',`
+  <div class="section-tag tag-blue">🔍 Chapter 7</div>
+  <div class="page-title">Pattern Recognition Guide</div>
+  <p class="page-subtitle">The 3-second skill: read the problem → identify the technique instantly.</p>
+
+  <h2>🧭 The Decision Framework</h2>
+  <div class="card card-accent">
+    <ol class="steps-list">
+      <li><p><strong>Is it a linear data structure?</strong> (array, string, linked list) → Yes: consider TP or SW.</p></li>
+      <li><p><strong>Does it involve a PAIR of elements?</strong> + sorted? → Two Pointer (Opposite Direction)</p></li>
+      <li><p><strong>Does it involve CONTIGUOUS subarray/substring?</strong> → Sliding Window</p></li>
+      <li><p><strong>Is the window size FIXED (given k)?</strong> → Fixed Sliding Window</p></li>
+      <li><p><strong>Is the window size FLEXIBLE (find max/min length)?</strong> → Variable Sliding Window</p></li>
+      <li><p><strong>Need to modify array in-place? No extra space?</strong> → Fast-Slow Two Pointer</p></li>
+    </ol>
+  </div>
+
+  <h2>🔑 Keyword → Technique Mapping</h2>
+  <table class="pattern-table">
+    <thead><tr><th>Keywords in Problem</th><th>Technique</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><span class="keyword-pill">pair</span><span class="keyword-pill">two numbers sum to target</span></td><td style="color:var(--accent3);font-weight:600">Two Pointer ↔</td><td style="color:var(--text3)">Two Sum II</td></tr>
+      <tr><td><span class="keyword-pill">sorted array</span><span class="keyword-pill">find pair/triplet</span></td><td style="color:var(--accent3);font-weight:600">Two Pointer ↔</td><td style="color:var(--text3)">3Sum, 4Sum</td></tr>
+      <tr><td><span class="keyword-pill">palindrome</span><span class="keyword-pill">check symmetric</span></td><td style="color:var(--accent3);font-weight:600">Two Pointer ↔</td><td style="color:var(--text3)">Valid Palindrome</td></tr>
+      <tr><td><span class="keyword-pill">remove in-place</span><span class="keyword-pill">no extra space</span></td><td style="color:var(--accent3);font-weight:600">Two Pointer →→</td><td style="color:var(--text3)">Remove Duplicates</td></tr>
+      <tr><td><span class="keyword-pill">container</span><span class="keyword-pill">max water</span><span class="keyword-pill">max area</span></td><td style="color:var(--accent3);font-weight:600">Two Pointer ↔</td><td style="color:var(--text3)">Container with Water</td></tr>
+      <tr><td><span class="keyword-pill">subarray of size k</span><span class="keyword-pill">every window of k</span></td><td style="color:var(--accent);font-weight:600">SW Fixed</td><td style="color:var(--text3)">Max Sum of Size K</td></tr>
+      <tr><td><span class="keyword-pill">longest substring</span><span class="keyword-pill">longest subarray</span></td><td style="color:var(--accent);font-weight:600">SW Variable</td><td style="color:var(--text3)">Longest No Repeat</td></tr>
+      <tr><td><span class="keyword-pill">minimum window</span><span class="keyword-pill">smallest subarray</span></td><td style="color:var(--accent);font-weight:600">SW Variable</td><td style="color:var(--text3)">Min Window Substring</td></tr>
+      <tr><td><span class="keyword-pill">at most k distinct</span><span class="keyword-pill">k unique chars</span></td><td style="color:var(--accent);font-weight:600">SW Variable</td><td style="color:var(--text3)">Fruits in Baskets</td></tr>
+      <tr><td><span class="keyword-pill">anagram</span><span class="keyword-pill">permutation exists</span></td><td style="color:var(--accent);font-weight:600">SW Fixed</td><td style="color:var(--text3)">Permutation in String</td></tr>
+      <tr><td><span class="keyword-pill">contiguous</span><span class="keyword-pill">consecutive elements</span></td><td style="color:var(--accent);font-weight:600">SW (any)</td><td style="color:var(--text3)">Any subarray problem</td></tr>
+      <tr><td><span class="keyword-pill">water trapped</span><span class="keyword-pill">elevation map</span></td><td style="color:var(--accent3);font-weight:600">Two Pointer ↔</td><td style="color:var(--text3)">Trapping Rain Water</td></tr>
+      <tr><td><span class="keyword-pill">flip k zeros</span><span class="keyword-pill">replace k chars</span></td><td style="color:var(--accent);font-weight:600">SW Variable</td><td style="color:var(--text3)">Max Ones III, LC 424</td></tr>
+      <tr><td><span class="keyword-pill">exactly k distinct</span></td><td style="color:var(--accent);font-weight:600">SW: atMost(k)-atMost(k-1)</td><td style="color:var(--text3)">Subarrays K Distinct</td></tr>
+    </tbody>
+  </table>
+
+  <h2>🎭 Common Disguises</h2>
+  <div class="grid-2">
+    <div class="card card-warn">
+      <h3 style="margin-top:0;font-size:1rem">⚠️ Problems That Look Different But Aren't</h3>
+      <ul style="padding-left:20px;line-height:2.2;font-size:.88rem;color:var(--text2)">
+        <li>"Fruits into baskets" = At Most 2 Distinct</li>
+        <li>"Reduce X to zero" = Longest Subarray = target</li>
+        <li>"Max 0s you can flip" = Longest Window ≤ k zeros</li>
+        <li>"Delete one element" = At most 1 zero in window</li>
+        <li>"Grumpy owner" = Max sum fixed window</li>
+        <li>"Exactly K" = AtMost(K) - AtMost(K-1)</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <h3 style="margin-top:0;font-size:1rem">✅ Instant Recognition Rules</h3>
+      <ul style="padding-left:20px;line-height:2.2;font-size:.88rem;color:var(--text2)">
+        <li>See "subarray" → think Sliding Window</li>
+        <li>See "pair/two numbers" → think Two Pointer</li>
+        <li>See "sorted + pair" → definitely Two Pointer ↔</li>
+        <li>See "no extra space + sorted" → fast-slow</li>
+        <li>See "at most k" → variable SW with map</li>
+        <li>See "exactly k" → atMost trick</li>
+      </ul>
+    </div>
+  </div>
+  <button class="mark-btn" onclick="markDone('pattern')">✅ Mark Pattern Guide as Done</button>`);
+}
+
+// ===== APPROACH BUILDER =====
+function buildApproach(){
+  sec('approach',`
+  <div class="section-tag tag-green">🛠 Chapter 8</div>
+  <div class="page-title">Approach Builder</div>
+  <p class="page-subtitle">The exact mental process top coders use to solve any problem from scratch.</p>
+
+  <h2>🧠 The 5-Step Framework</h2>
+  <div class="card card-accent">
+    <ol class="steps-list">
+      <li><div><strong>Understand</strong><p style="margin-top:6px">What is input type? What is output type? Any constraints (sorted? positive? distinct?). Draw the simplest example on paper. What does the problem ACTUALLY want?</p></div></li>
+      <li><div><strong>Identify Pattern</strong><p style="margin-top:6px">Scan for keywords: pair? subarray? sorted? contiguous? flip? Apply the keyword → technique table. 90% of the time, the pattern is obvious from keywords.</p></div></li>
+      <li><div><strong>Brute Force First</strong><p style="margin-top:6px">Write the naive O(n²) solution first. This guarantees correctness. Then ask: "Where is the WASTED work? What am I recalculating each iteration?"</p></div></li>
+      <li><div><strong>Optimize with Template</strong><p style="margin-top:6px">Apply the Two Pointer or Sliding Window template. Define: What is the "window state"? When is the window valid/invalid? When do I update the answer?</p></div></li>
+      <li><div><strong>Test Edge Cases</strong><p style="margin-top:6px">Test: empty [], single [x], all same [1,1,1], all different, min/max values, already sorted, reverse sorted. Trace through code manually.</p></div></li>
+    </ol>
+  </div>
+
+  <h2>❓ Questions to Ask Yourself at Each Stage</h2>
+  <div class="grid-2">
+    <div class="card card-warn"><h3 style="margin-top:0">Identifying the problem</h3>
+    <ul style="padding-left:20px;line-height:2.2;font-size:.88rem;color:var(--text2)">
+      <li>Am I looking for a pair or a subarray?</li>
+      <li>Is the array sorted?</li>
+      <li>Is the window size fixed or variable?</li>
+      <li>What makes the window "valid" vs "invalid"?</li>
+      <li>Am I maximizing or minimizing?</li>
+      <li>Do I need "exactly" or "at most"?</li>
+    </ul></div>
+    <div class="card card-green"><h3 style="margin-top:0">Designing the solution</h3>
+    <ul style="padding-left:20px;line-height:2.2;font-size:.88rem;color:var(--text2)">
+      <li>What does my window state need to track?</li>
+      <li>When do I move L? When do I move R?</li>
+      <li>Where exactly do I update my answer?</li>
+      <li>What invariant is always true in my window?</li>
+      <li>Is my while loop guaranteed to terminate?</li>
+      <li>Does L ever go past R?</li>
+    </ul></div>
+  </div>
+
+  <h2>🔄 The Optimization Journey: A Case Study</h2>
+  <div class="card">
+    <h3 style="margin-top:0">Problem: Longest Substring with At Most K Distinct Characters</h3>
+    <p><strong>🐌 Brute Force Thinking:</strong> For every starting index i, extend j as far as possible while distinct chars ≤ k. Track maximum length.</p>
+    <div style="font-family:'Fira Code',monospace;font-size:.82rem;background:var(--bg3);padding:12px;border-radius:8px;line-height:2">
+      for i in 0..n:<br>
+      &nbsp;&nbsp;for j in i..n:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;if distinct(s[i..j]) &lt;= k: update max<br>
+      O(n²) or O(n³) depending on how you count distinct chars
+    </div>
+    <p><strong>⚡ Optimization Thought Process:</strong></p>
+    <p>❓ "When I extend j by one char, what changes?" → I add ONE char to my count.<br>
+    ❓ "When does the window become invalid?" → When distinct count > k.<br>
+    ❓ "How do I fix an invalid window?" → Remove from left until distinct ≤ k.<br>
+    ❓ "What state do I need to maintain?" → A map of char → count in window.<br>
+    ❓ "When do I update the answer?" → Every time the window is valid (after shrinking).<br></p>
+    <div class="info-box green"><div class="info-box-title">🎯 The Key Realization</div>
+    Brute force tries ALL subarrays. Sliding Window only maintains the CURRENT window and adjusts it incrementally. Instead of O(n²) pairs × O(n) check = O(n³), we do O(n) total pointer movements = O(n).</div>
+  </div>
+
+  <h2>🎯 Interview Communication Script</h2>
+  <div class="card card-purple">
+    <p style="margin-bottom:12px">Say these phrases out loud during an interview:</p>
+    <ol style="padding-left:20px;line-height:2.5;color:var(--text2);font-size:.9rem">
+      <li>"Let me start with the brute force. The naive approach would be... giving O(n²)."</li>
+      <li>"I notice this is asking for a [subarray/pair], and the constraint is [sorted/at most k]..."</li>
+      <li>"I can use [sliding window/two pointer] to optimize this to O(n)."</li>
+      <li>"My window is valid when [condition]. I'll expand by moving R right and shrink when [invalid]."</li>
+      <li>"Let me trace through this example: arr=[...], target=[...]: ..."</li>
+      <li>"This solution is O(n) time and O(1) space [or O(k) for the map]."</li>
+      <li>"Edge cases I should consider: empty array, single element, all same values..."</li>
+    </ol>
+  </div>
+  <button class="mark-btn" onclick="markDone('approach')">✅ Mark Approach Builder as Done</button>`);
+}
+
+// ===== CHEATSHEET =====
+function buildCheatsheet(){
+  const cppTpl=`<span class="cm">// ===== OPPOSITE DIRECTION =====</span>
+<span class="kw">int</span> L=<span class="num">0</span>, R=n-<span class="num">1</span>;
+<span class="kw">while</span>(L&lt;R){ 
+  <span class="kw">if</span>(found) <span class="kw">return</span>;
+  need_bigger ? L++ : R--; }
+
+<span class="cm">// ===== FAST-SLOW =====</span>
+<span class="kw">int</span> slow=<span class="num">0</span>;
+<span class="kw">for</span>(<span class="kw">int</span> fast=<span class="num">0</span>;fast&lt;n;fast++)
+  <span class="kw">if</span>(valid(a[fast]))a[slow++]=a[fast];
+
+<span class="cm">// ===== FIXED WINDOW =====</span>
+<span class="kw">int</span> s=<span class="num">0</span>;
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i&lt;k;i++)s+=a[i];
+<span class="kw">int</span> ans=s;
+<span class="kw">for</span>(<span class="kw">int</span> R=k;R&lt;n;R++){
+  s+=a[R]-a[R-k];ans=max(ans,s);}
+
+<span class="cm">// ===== VARIABLE WINDOW =====</span>
+<span class="kw">int</span> L=<span class="num">0</span>,ans=<span class="num">0</span>;
+<span class="kw">for</span>(<span class="kw">int</span> R=<span class="num">0</span>;R&lt;n;R++){
+  add(a[R]);
+  <span class="kw">while</span>(invalid()){remove(a[L++]);}
+  ans=max(ans,R-L+<span class="num">1</span>);}`;
+  const pyTpl=`<span class="cm"># ===== OPPOSITE DIRECTION =====</span>
+L,R=<span class="num">0</span>,n-<span class="num">1</span>
+<span class="kw">while</span> L&lt;R:
+  <span class="kw">if</span> found: <span class="kw">return</span>
+  <span class="kw">if</span> need_bigger: L+=<span class="num">1</span>
+  <span class="kw">else</span>: R-=<span class="num">1</span>
+
+<span class="cm"># ===== FAST-SLOW =====</span>
+slow=<span class="num">0</span>
+<span class="kw">for</span> fast <span class="kw">in</span> range(n):
+  <span class="kw">if</span> valid(a[fast]):
+    a[slow]=a[fast]; slow+=<span class="num">1</span>
+
+<span class="cm"># ===== FIXED WINDOW =====</span>
+s=<span class="kw">sum</span>(a[:k]); ans=s
+<span class="kw">for</span> R <span class="kw">in</span> range(k,n):
+  s+=a[R]-a[R-k]; ans=<span class="kw">max</span>(ans,s)
+
+<span class="cm"># ===== VARIABLE WINDOW =====</span>
+L=ans=<span class="num">0</span>
+<span class="kw">for</span> R <span class="kw">in</span> range(n):
+  add(a[R])
+  <span class="kw">while</span> invalid(): remove(a[L]);L+=<span class="num">1</span>
+  ans=<span class="kw">max</span>(ans,R-L+<span class="num">1</span>)`;
+
+  sec('cheatsheet',`
+  <div class="section-tag tag-warn">⚡ Chapter 9</div>
+  <div class="page-title">Ultimate Cheatsheet</div>
+  <p class="page-subtitle">All templates, patterns, and common mistakes in one place.</p>
+
+  <h2>📋 All Templates</h2>
+  <div class="cpp-only">${codeBlock('cpp','All Templates',cppTpl)}</div>
+  <div class="py-only">${codeBlock('python','All Templates',pyTpl)}</div>
+
+  <h2>🔑 Pattern Summary Table</h2>
+  <table class="pattern-table">
+    <thead><tr><th>Technique</th><th>Use When</th><th>Key Signal</th><th>Time</th><th>Space</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--accent3);font-weight:600">Two Pointer ↔</td><td>Find pair with condition</td><td>sorted + pair + sum</td><td style="color:var(--accent2)">O(n)</td><td style="color:var(--accent2)">O(1)</td></tr>
+      <tr><td style="color:var(--accent3);font-weight:600">Two Pointer →→</td><td>In-place modification</td><td>no extra space</td><td style="color:var(--accent2)">O(n)</td><td style="color:var(--accent2)">O(1)</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600">SW Fixed</td><td>Window of given size k</td><td>every window of k</td><td style="color:var(--accent2)">O(n)</td><td style="color:var(--accent2)">O(1)</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600">SW Variable Max</td><td>Longest valid subarray</td><td>longest/maximum subarray</td><td style="color:var(--accent2)">O(n)</td><td style="color:var(--warn)">O(k)</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600">SW Variable Min</td><td>Shortest valid subarray</td><td>smallest/minimum window</td><td style="color:var(--accent2)">O(n)</td><td style="color:var(--warn)">O(k)</td></tr>
+      <tr><td style="color:var(--accent2);font-weight:600">Sort + TP</td><td>Triplets, quadruplets</td><td>3Sum, 4Sum</td><td style="color:var(--warn)">O(n²)</td><td style="color:var(--accent2)">O(1)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>⚠️ Common Mistakes &amp; Fixes</h2>
+  <div class="grid-2">
+    <div class="card card-danger"><h3 style="margin-top:0;font-size:1rem">❌ Mistakes</h3>
+    <ul style="padding-left:20px;line-height:2.2;font-size:.85rem;color:var(--text2)">
+      <li>Forgetting L &lt; R in while loop</li>
+      <li>Off-by-one: window = R-L+1, not R-L</li>
+      <li>Empty array not handled</li>
+      <li>Using while/if incorrectly in shrink step</li>
+      <li>Updating answer at wrong position</li>
+      <li>Not erasing zero-count map entries</li>
+      <li>Fixed window: forgetting initial build</li>
+      <li>L going past R in variable window</li>
+    </ul></div>
+    <div class="card card-green"><h3 style="margin-top:0;font-size:1rem">✅ Best Practices</h3>
+    <ul style="padding-left:20px;line-height:2.2;font-size:.85rem;color:var(--text2)">
+      <li>Always initialize ans = 0 or INT_MAX</li>
+      <li>Test: [], [1], [1,1,1], [1,2,3,4,5]</li>
+      <li>Trace pointers manually on small input</li>
+      <li>For maps: delete when count hits 0</li>
+      <li>Define valid/invalid condition clearly</li>
+      <li>For min window: update inside while</li>
+      <li>For max window: update after while</li>
+      <li>Comment your pointer movement logic</li>
+    </ul></div>
+  </div>
+
+  <h2>🎯 Interview Checklist</h2>
+  <div class="card card-accent">
+    <ol class="steps-list">
+      <li><p>✅ Clarify: input constraints, return format, edge cases</p></li>
+      <li><p>✅ State brute force and its complexity</p></li>
+      <li><p>✅ Explain the optimization insight clearly</p></li>
+      <li><p>✅ Define window valid/invalid condition before coding</p></li>
+      <li><p>✅ Trace through 1 example before coding</p></li>
+      <li><p>✅ Code cleanly with comments</p></li>
+      <li><p>✅ State time and space complexity</p></li>
+      <li><p>✅ Test edge cases: empty, single, all same</p></li>
+    </ol>
+  </div>
+
+  <div class="info-box green" style="margin-top:24px">
+    <div class="info-box-title">🚀 You're Interview Ready!</div>
+    After completing all sections you can now:<br>
+    ✔ Identify Two Pointer vs Sliding Window from keywords<br>
+    ✔ Apply the right template instantly<br>
+    ✔ Convert brute force → O(n) optimized solution<br>
+    ✔ Solve unseen problems by recognizing the pattern<br>
+    ✔ Communicate your thinking clearly in interviews<br><br>
+    <strong>You're ready for FAANG interviews. Go get that offer! 🎉</strong>
+  </div>
+  <button class="mark-btn" onclick="markDone('cheatsheet')">✅ Mark Cheatsheet as Done</button>`);
+}
+
+// ===== BOOT =====
+buildAll();
+initViz();
+
+</script>
+</body>
+</html>
